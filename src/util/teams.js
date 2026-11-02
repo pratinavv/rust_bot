@@ -1,4 +1,9 @@
 /*
+    Copyright (C) 2026 Pratinav Verma
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
+/*
     Registry of the Rust teams the bot runs.
 
     The rest of the code passes a team id wherever it says guildId: instances, intl, Rust+ connections and
@@ -93,10 +98,6 @@ module.exports = {
 
     steamIdsOf: function (team) {
         return Object.values(team.members).map(member => member.steamId);
-    },
-
-    discordIdOf: function (team, steamId) {
-        return Object.keys(team.members).find(discordId => team.members[discordId].steamId === steamId);
     },
 
     /* Members ordered by who joined first, without the given member. */

@@ -43,7 +43,6 @@ module.exports = async (client, guild, forced = false) => {
             });
             instance.informationMessageId[name] = message ? message.id : null;
         }
-        instance.informationMessageId.battlemetricsPlayers = null;
 
         for (const panel of SettingsPanels.getPanels(guild.id)) {
             await client.messageSend(channel, panel);

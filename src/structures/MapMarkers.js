@@ -251,9 +251,6 @@ class MapMarkers {
         return remainingMarkersOfType;
     }
 
-
-
-
     /* Update event map markers */
 
     updateMapMarkers(mapMarkers) {
@@ -781,8 +778,6 @@ class MapMarkers {
         }
     }
 
-
-
     /* Timer notification functions */
 
     notifyCargoShipEgress(args) {
@@ -842,20 +837,6 @@ class MapMarkers {
     }
 
     /* Help functions */
-
-    getClosestMonument(x, y) {
-        let minDistance = 1000000;
-        let closestMonument = null;
-        for (let monument of this.rustplus.map.monuments) {
-            let distance = Map.getDistance(x, y, monument.x, monument.y);
-            if (distance < minDistance && this.validCrateMonuments.includes(monument.token)) {
-                minDistance = distance;
-                closestMonument = monument;
-            }
-        }
-
-        return closestMonument;
-    }
 
     reset() {
         this.players = [];

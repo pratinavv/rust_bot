@@ -22,30 +22,6 @@ const Fs = require('fs');
 const Path = require('path');
 
 module.exports = {
-    parseArgs: function (str) {
-        return str.trim().split(/[ ]+/);
-    },
-
-    getArgs: function (str, n = 0) {
-        const args = this.parseArgs(str);
-        if (isNaN(n)) n = 0;
-        if (n < 1) return args;
-        const newArgs = [];
-
-        let remain = str;
-        let counter = 1;
-        for (const arg of args) {
-            if (counter === n) {
-                newArgs.push(remain);
-                break;
-            }
-            remain = remain.slice(arg.length).trim();
-            newArgs.push(arg);
-            counter += 1;
-        }
-
-        return newArgs;
-    },
 
     decodeHtml: function (str) {
         const htmlReservedSymbols = JSON.parse(Fs.readFileSync(
@@ -56,11 +32,6 @@ module.exports = {
         }
 
         return str;
-    },
-
-    removeInvisibleCharacters: function (str) {
-        str = str.replace(/[\u200B-\u200D\uFEFF]/g, '');
-        return str.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
     },
 
     findClosestString: function (string, array, threshold = 2) {

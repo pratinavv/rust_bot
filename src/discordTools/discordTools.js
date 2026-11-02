@@ -92,26 +92,6 @@ module.exports = {
         return undefined;
     },
 
-    getTextChannelByName: function (guildId, name) {
-        const guild = module.exports.getGuild(guildId);
-
-        if (guild) {
-            let channel = undefined;
-            try {
-                channel = guild.channels.cache.find(c => c.name === name);
-            }
-            catch (e) {
-                Client.client.log(Client.client.intlGet(null, 'errorCap'),
-                    Client.client.intlGet(null, 'couldNotFindChannel', { channel: name }), 'error');
-            }
-
-            if (channel && channel.type === Discord.ChannelType.GuildText) {
-                return channel;
-            }
-        }
-        return undefined;
-    },
-
     getCategoryById: function (guildId, categoryId) {
         const guild = module.exports.getGuild(guildId);
 
@@ -123,26 +103,6 @@ module.exports = {
             catch (e) {
                 Client.client.log(Client.client.intlGet(null, 'errorCap'),
                     Client.client.intlGet(null, 'couldNotFindCategory', { category: categoryId }), 'error');
-            }
-
-            if (category && category.type === Discord.ChannelType.GuildCategory) {
-                return category;
-            }
-        }
-        return undefined;
-    },
-
-    getCategoryByName: function (guildId, name) {
-        const guild = module.exports.getGuild(guildId);
-
-        if (guild) {
-            let category = undefined;
-            try {
-                category = guild.channels.cache.find(c => c.name === name);
-            }
-            catch (e) {
-                Client.client.log(Client.client.intlGet(null, 'errorCap'),
-                    Client.client.intlGet(null, 'couldNotFindCategory', { category: name }), 'error');
             }
 
             if (category && category.type === Discord.ChannelType.GuildCategory) {
@@ -169,20 +129,6 @@ module.exports = {
                         Client.client.intlGet(null, 'couldNotFindMessage', { message: messageId }), 'error');
                 }
             }
-        }
-        return undefined;
-    },
-
-    deleteMessageById: async function (guildId, channelId, messageId) {
-        const message = await module.exports.getMessageById(guildId, channelId, messageId);
-
-        try {
-            await message.delete();
-        }
-        catch (e) {
-            Client.client.log(Client.client.intlGet(null, 'errorCap'),
-                Client.client.intlGet(null, 'couldNotDeleteMessage', { message: messageId }), 'error');
-
         }
         return undefined;
     },
@@ -309,7 +255,4 @@ module.exports = {
         }
     },
 
-    getDiscordFormattedDate: function (unixtime) {
-        return `<t:${unixtime}:d>`;
-    },
 }

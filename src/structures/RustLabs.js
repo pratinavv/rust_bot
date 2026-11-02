@@ -37,9 +37,7 @@ const IGNORED_RECYCLE_ITEMS = [
     '-946369541' /* Low Grade Fuel */
 ];
 
-
 class RustLabs {
-
 
     /**
      *  Constructor for the RustLabs Class.
@@ -90,7 +88,6 @@ class RustLabs {
         this._other = Object.keys(this.rustlabsOther);
     }
 
-
     /***********************************************************************************
      *  Getters
      **********************************************************************************/
@@ -113,7 +110,6 @@ class RustLabs {
     get buildingBlocks() { return this._buildingBlocks; }
     get other() { return this._other; }
 
-
     /***********************************************************************************
      *  General functions
      **********************************************************************************/
@@ -122,25 +118,16 @@ class RustLabs {
      *  Get all durability groups.
      *  @return {array} An array of all the durability groups.
      */
-    getDurabilityGroups() {
-        return this.durabilityGroups;
-    }
 
     /**
      *  Get all durability which.
      *  @return {array} An array of all the durability which.
      */
-    getDurabilityWhich() {
-        return this.durabilityWhich;
-    }
 
     /**
      *  Get all ordered by.
      *  @return {array} An array of all the ordered by.
      */
-    getOrderedBy() {
-        return this.orderedBy;
-    }
 
     /**
      *  Get the closest building block name by name.
@@ -175,14 +162,6 @@ class RustLabs {
      *  @param {boolean} orderedByLow true if it should be ordered from low to high, false from high to low.
      *  @return {array} The sorted array.
      */
-    getArrayOrderedBy(array, key, orderedByLow) {
-        if (orderedByLow) {
-            return array.sort(function (a, b) { return a[key] - b[key] });
-        }
-        else {
-            return array.sort(function (a, b) { return b[key] - a[key] });
-        }
-    }
 
     /**
      *  Get an array ordered by [key] - high to low or low to high
@@ -190,46 +169,6 @@ class RustLabs {
      *  @param {string} orderedBy The choice to order by.
      *  @return {array} The sorted array.
      */
-    getArrayOrderedByChoice(array, orderedBy = null) {
-        switch (orderedBy) {
-            case 'quantityHighFirst': {
-                return this.getArrayOrderedBy(array, 'quantity', false);
-            } break;
-
-            case 'quantityLowFirst': {
-                return this.getArrayOrderedBy(array, 'quantity', true);
-            } break;
-
-            case 'timeHighFirst': {
-                return this.getArrayOrderedBy(array, 'time', false);
-            } break;
-
-            case 'timeLowFirst': {
-                return this.getArrayOrderedBy(array, 'time', true);
-            } break;
-
-            case 'fuelHighFirst': {
-                return this.getArrayOrderedBy(array, 'fuel', false);
-            } break;
-
-            case 'fuelLowFirst': {
-                return this.getArrayOrderedBy(array, 'fuel', true);
-            } break;
-
-            case 'sulfurHighFirst': {
-                return this.getArrayOrderedBy(array, 'sulfur', false);
-            } break;
-
-            case 'sulfurLowFirst': {
-                return this.getArrayOrderedBy(array, 'sulfur', true);
-            } break;
-
-            default: {
-                return array;
-            } break;
-        }
-    }
-
 
     /***********************************************************************************
      *  Craft functions
@@ -249,12 +188,6 @@ class RustLabs {
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, craftDetails]
      */
-    getCraftDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getCraftDetailsById(id);
-    }
 
     /**
      *  Get craft details of an item.
@@ -265,7 +198,6 @@ class RustLabs {
         if (!this.hasCraftDetails(id)) return null;
         return [id, this.items.items[id], this.craftData[id]];
     }
-
 
     /***********************************************************************************
      *  Research functions
@@ -285,12 +217,6 @@ class RustLabs {
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, researchDetails]
      */
-    getResearchDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getResearchDetailsById(id);
-    }
 
     /**
      *  Get research details of an item.
@@ -301,7 +227,6 @@ class RustLabs {
         if (!this.hasResearchDetails(id)) return null;
         return [id, this.items.items[id], this.researchData[id]];
     }
-
 
     /***********************************************************************************
      *  Recycle functions
@@ -321,12 +246,6 @@ class RustLabs {
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, recycleDetails]
      */
-    getRecycleDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getRecycleDetailsById(id);
-    }
 
     /**
      *  Get recycle details of an item.
@@ -422,7 +341,6 @@ class RustLabs {
         return recycleData;
     }
 
-
     /***********************************************************************************
      *  Durability functions
      **********************************************************************************/
@@ -432,11 +350,6 @@ class RustLabs {
      *  @param {string} itemIdOrName The itemId or name of the entity.
      *  @return {boolean} true if exist, otherwise false.
      */
-    hasDurabilityDetails(itemIdOrName) {
-        return this.durabilityData['items'].hasOwnProperty(itemIdOrName) ||
-            this.durabilityData['buildingBlocks'].hasOwnProperty(itemIdOrName) ||
-            this.durabilityData['other'].hasOwnProperty(itemIdOrName);
-    }
 
     /**
      *  Get durability details of an item, building block or other.
@@ -447,64 +360,6 @@ class RustLabs {
      *  @return {array|null} null if something went wrong, otherwise
      *      [type, id/name, itemDetails/name, durabilityDetails]
      */
-    getDurabilityDetailsByName(name, group = null, which = null, orderedBy = null) {
-        if (typeof (name) !== 'string') return null;
-        if (group !== null && !this.durabilityGroups.includes(group)) return null;
-        if (which !== null && !this.durabilityWhich.includes(which)) return null;
-        if (orderedBy !== null && !this.orderedBy.includes(orderedBy)) return null;
-
-        let type = null;
-
-        let foundName = null;
-        if (!foundName) {
-            foundName = this.getClosestOtherNameByName(name);
-            if (foundName) {
-                if (this.durabilityData['other'].hasOwnProperty(foundName)) {
-                    type = 'other';
-                }
-                else {
-                    foundName = null;
-                }
-            }
-        }
-
-        if (!foundName) {
-            foundName = this.getClosestBuildingBlockNameByName(name);
-            if (foundName) {
-                if (this.durabilityData['buildingBlocks'].hasOwnProperty(foundName)) {
-                    type = 'buildingBlocks';
-                }
-                else {
-                    foundName = null;
-                }
-            }
-        }
-
-        if (!foundName) {
-            foundName = this.items.getClosestItemIdByName(name);
-            if (foundName) {
-                if (this.durabilityData['items'].hasOwnProperty(foundName)) {
-                    return this.getDurabilityDetailsById(foundName, group, which, orderedBy);
-                }
-                else {
-                    foundName = null;
-                }
-            }
-        }
-
-        if (!foundName) return null;
-
-        let content = [];
-        for (const item of this.durabilityData[type][foundName]) {
-            if (group !== null && item.group !== group) continue;
-            if (which !== null && item.which !== which) continue;
-            content.push(item);
-        }
-
-        content = this.getArrayOrderedByChoice(content, orderedBy);
-
-        return [type, foundName, foundName, content];
-    }
 
     /**
      *  Get durability details of an item.
@@ -513,25 +368,6 @@ class RustLabs {
      *  @param {string} which The which of the item.
      *  @return {array|null} null if something went wrong, otherwise [type, id, itemDetails, durabilityDetails]
      */
-    getDurabilityDetailsById(id, group = null, which = null, orderedBy = null) {
-        if (typeof (id) !== 'string') return null;
-        if (!this.hasDurabilityDetails(id)) return null;
-        if (group !== null && !this.durabilityGroups.includes(group)) return null;
-        if (which !== null && !this.durabilityWhich.includes(which)) return null;
-        if (orderedBy !== null && !this.orderedBy.includes(orderedBy)) return null;
-
-        let content = [];
-        for (const item of this.durabilityData['items'][id]) {
-            if (group !== null && item.group !== group) continue;
-            if (which !== null && item.which !== which) continue;
-            content.push(item);
-        }
-
-        content = this.getArrayOrderedByChoice(content, orderedBy);
-
-        return ['items', id, this.items.items[id], content];
-    }
-
 
     /***********************************************************************************
      *  Smelting functions
@@ -542,31 +378,18 @@ class RustLabs {
      *  @param {string} itemId The itemId of the item.
      *  @return {boolean} true if exist, otherwise false.
      */
-    hasSmeltingDetails(itemId) {
-        return this.smeltingData.hasOwnProperty(itemId);
-    }
 
     /**
      *  Get smelting details of an item.
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, smeltingDetails]
      */
-    getSmeltingDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getSmeltingDetailsById(id);
-    }
 
     /**
      *  Get smelting details of an item.
      *  @param {string} id The id of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, smeltingDetails]
      */
-    getSmeltingDetailsById(id) {
-        if (!this.hasSmeltingDetails(id)) return null;
-        return [id, this.items.items[id], this.smeltingData[id]];
-    }
 
     /**
      *  Get smelting details by the from parameter item.
@@ -574,24 +397,6 @@ class RustLabs {
      *  @return {array|null} null if something went wrong, otherwise Object of smelting details of the
      *      from parameter item.
      */
-    getSmeltingDetailsFromParameterById(id) {
-        if (!this.items.hasOwnProperty(id)) return null;
-        const fromParameterSmeltingDetails = new Object();
-        for (const [smeltingTool, smeltingDetails] of Object.entries(this.smeltingData)) {
-            for (const details of smeltingDetails) {
-                if (details.fromId === id) {
-                    if (!fromParameterSmeltingDetails.hasOwnProperty(smeltingTool)) {
-                        fromParameterSmeltingDetails[smeltingTool] = [];
-                    }
-
-                    fromParameterSmeltingDetails[smeltingTool].push(details);
-                }
-            }
-        }
-
-        return fromParameterSmeltingDetails;
-    }
-
 
     /***********************************************************************************
      *  Despawn functions
@@ -611,12 +416,6 @@ class RustLabs {
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, despawnDetails]
      */
-    getDespawnDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getDespawnDetailsById(id);
-    }
 
     /**
      *  Get despawn details of an item.
@@ -627,7 +426,6 @@ class RustLabs {
         if (!this.hasDespawnDetails(id)) return null;
         return [id, this.items.items[id], this.despawnData[id]];
     }
-
 
     /***********************************************************************************
      *  Stack functions
@@ -647,12 +445,6 @@ class RustLabs {
      *  @param {string} name The name of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, stackDetails]
      */
-    getStackDetailsByName(name) {
-        if (typeof (name) !== 'string') return null;
-        const id = this.items.getClosestItemIdByName(name);
-        if (!id) return null;
-        return this.getStackDetailsById(id);
-    }
 
     /**
      *  Get stack details of an item.
@@ -663,7 +455,6 @@ class RustLabs {
         if (!this.hasStackDetails(id)) return null;
         return [id, this.items.items[id], this.stackData[id]];
     }
-
 
     /***********************************************************************************
      *  Decay functions
@@ -744,7 +535,6 @@ class RustLabs {
 
         return ['items', id, this.items.items[id], this.decayData['items'][id]];
     }
-
 
     /***********************************************************************************
      *  Upkeep functions

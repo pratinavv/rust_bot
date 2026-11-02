@@ -4,10 +4,6 @@
     "muteInGameBotMessages": false,
     "trademark": "pratinavv",
     "inGameCommandsEnabled": true,
-    "fcmAlarmNotificationEnabled": false,
-    "fcmAlarmNotificationEveryone": false,
-    "smartAlarmNotifyInGame": true,
-    "smartSwitchNotifyInGameWhenChangedFromDiscord": true,
     "leaderCommandEnabled": true,
     "leaderCommandOnlyForPaired": false,
     "commandDelay": 0,
@@ -15,11 +11,5 @@
     "afkNotify": false,
     "deathNotify": true,
     "mapWipeNotifyEveryone": false,
-    "itemAvailableInVendingMachineNotifyInGame": true,
-    "displayInformationBattlemetricsAllOnlinePlayers": false,
-    "battlemetricsServerNameChanges": true,
-    "battlemetricsTrackerNameChanges": true,
-    "battlemetricsGlobalNameChanges": false,
-    "battlemetricsGlobalLogin": false,
-    "battlemetricsGlobalLogout": false
+    "itemAvailableInVendingMachineNotifyInGame": true
 }

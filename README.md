@@ -1,84 +1,112 @@
 <p align="center">
-<img src="./rustplusplus.png" width="500"></a>
+  <img src="src/resources/images/pratinavv_logo.png" width="140" alt="pratinavv logo">
 </p>
 
-<p align="center">
-<a href="https://discord.gg/vcrKbKVAbc"><img src="https://img.shields.io/badge/Discord-Alexemanuel-%237289DA?style=flat&logo=discord" alt="discord"/></a>
-<a href="https://www.reddit.com/user/Alexemanuelol"><img src="https://img.shields.io/badge/Reddit-Alexemanuelol-FF4500?style=flat&logo=reddit" alt="reddit"/></a>
-<a href="https://ko-fi.com/alexemanuelol"><img src="https://img.shields.io/badge/Donate%20a%20Coffee-alexemanuelol-yellow?style=flat&logo=buy-me-a-coffee" alt="donate on ko-fi"/></a>
+<h1 align="center">pratinavv</h1>
 
-<p align="center">
-<a href="https://crowdin.com/project/rustplusplus"><img src="https://badges.crowdin.net/rustplusplus/localized.svg" alt="donate on ko-fi"/></a>
-</p>
+<p align="center">One Discord bot for all your Rust teams: live alerts, team chat and team status.</p>
 
-<p align="center">
-    <a href="https://discord.gg/vcrKbKVAbc">
-        <img src="./join_discord.png" width="250">
-    </a>
-</p>
+---
 
-<h1 align="center"><em><b>rustplusplus</b> ~ Rust+ Discord Bot</em></h1>
-</p>
+## What it does
 
-A NodeJS Discord Bot that uses the [rustplus.js](https://github.com/liamcottle/rustplus.js) library to utilize the power of the [Rust+ Companion App](https://rust.facepunch.com/companion) with additional Quality-of-Life features.
+- **Many teams, one bot.** Players create and join teams themselves. Each team gets its own role and private channels.
+- **One alert per event.** Each team uses a single Rust+ connection, so a cargo ship shows up once however many members the team has.
+- **Live alerts.** Cargo Ship, Patrol Helicopter, Chinook, Oil Rig crates and heavy scientists, Traveling Vendor and vending machines.
+- **Two-way team chat.** Messages move between Discord and in-game team chat.
+- **Live information.** Server stats, active events, team status and the map stay up to date in one channel.
+- **Simple settings.** Each alert has one on or off switch that covers both Discord and team chat.
 
+Each team gets three channels:
 
-## **How-to Setup Video**
+| Channel | Purpose |
+|---|---|
+| `information` | Server, live events, team status, map and settings |
+| `events` | Alerts and activity notices |
+| `teamchat` | Chat linked with in-game team chat |
 
-[![Image of setup video](https://www.youtube.com/s/desktop/4a88d8c6/img/favicon_144x144.png)](https://youtu.be/GX03brJiMZg)
+## Join a team
 
-## **Features**
+1. Download the [credential app](https://github.com/alexemanuelol/rustplusplus-credential-application/releases/download/v1.4.0/rustplusplus-1.4.0-win-x64.exe) and log in with Steam.
+2. Run `/credentials add` in Discord with the details it gives you. Only you can see the reply.
+3. Run `/team join` and pick a team.
 
-* Receive notifications for [In-Game Events](docs/discord_text_channels.md#events-channel) (Patrol Helicopter, Cargo Ship, Chinook 47, Oil Rigs triggered).
-* Control [Smart Switches](docs/smart_devices.md#smart-switches) or Groups of Smart Switches via Discord or In-Game Team Chat.
-* Setup [Smart Alarms](docs/smart_devices.md#smart-alarms) to notify in Discord or In-Game Team Chat whenever they are triggered.
-* Use [Storage Monitors](docs/smart_devices.md#storage-monitors) to keep track of Tool Cupboard Upkeep or Large Wooden Box/Vending Machine content.
-* Head over to the [Information Text Channel](docs/images/information_channel.png) to see all sorts of information about the server, ongoing events and team member status.
-* Communicate with teammates from [Discord to In-Game](docs/discord_text_channels.md#teamchat-channel) and vice versa.
-* Keep track of other teams on the server with the [Battlemetrics Player Tracker](docs/discord_text_channels.md#trackers-channel).
-* Alot of [QoL Commands](docs/commands.md) that can be used In-Game or from Discord.
-* View the [Full list of features](docs/full_list_features.md).
+To be able to lead a team later, also open the Rust+ menu in Rust and click **Pair with Server** for that team's server.
 
+## Create a team
 
-## **Documentation**
+1. Do steps 1 and 2 above.
+2. In Rust, open the Rust+ menu and click **Pair with Server**.
+3. Run `/team create` and give your team a name.
 
-> Documentation can be found [here](https://github.com/alexemanuelol/rustplusplus/blob/master/docs/documentation.md). The documentation explains the features as well as `how to setup the bot`, so make sure to take a look at it 😉
+You become its leader, and the bot creates the role and channels. A team belongs to one server and lasts one wipe: it closes when the server wipes or when the leader runs `/team end-wipe`. Its channels are deleted 7 days later.
 
-## **Credentials**
+> **Open teams:** anyone with credentials can join any team, then read its channels and post into its in-game team chat. Leaders can remove people with `/team kick`.
 
-> You can get your credentials by running the `rustplusplus credential application`. Download it [here](https://github.com/alexemanuelol/rustplusplus-credential-application/releases/download/v1.4.0/rustplusplus-1.4.0-win-x64.exe)
+## Commands
 
+### Team
 
-## **How to run the bot**
+| Command | Who | What it does |
+|---|---|---|
+| `/team create` | Anyone | Start a team on the server you paired with |
+| `/team join` | Anyone | Pick a team to join |
+| `/team leave` | Members | Leave the team |
+| `/team info` | Members | Show the leader, server and members |
+| `/team rename` | Leader | Rename the team, its role and category |
+| `/team pass-leader` | Leader | Hand leadership to a paired member |
+| `/team kick` | Leader | Remove a member |
+| `/team end-wipe` | Leader | Close the team and stop its alerts |
 
-> To run the bot, simply open the terminal of your choice and run the following from repository root:
+Server admins can also use the leader commands. If you are in more than one team, run team commands inside the channels of the team you mean.
 
-    $ npm start run
+### Credentials
 
+| Command | What it does |
+|---|---|
+| `/credentials add` | Register or renew your credentials |
+| `/credentials show` | Show your Steam ID, expiry date and teams |
+| `/credentials remove` | Remove your credentials |
 
-## **How to update the repository**
+### Lookups and tools
 
-> Depending on your OS / choice of terminal you can run:
+`/alias` `/blacklist` `/cctv` `/craft` `/decay` `/despawn` `/help` `/item` `/leader` `/map` `/market` `/recycle` `/research` `/reset` `/stack` `/upkeep` `/uptime`
 
-    $ update.bat
+### In-game
 
-or
+Type these in team chat, for example `!cargo`, `!heli`, `!small`, `!large`, `!chinook`, `!vendor`, `!pop`, `!time`, `!online`, `!offline`, `!team`, `!upkeep`, `!craft`, `!recycle`, `!stack`, `!timer` or `!tr`.
 
-    $ ./update.sh
+`!leader` makes you the in-game team leader, which is separate from the Discord team leader. It only works if the current in-game leader has registered credentials.
 
+## Host it yourself
 
-## **Running via docker**
+You need [Node.js](https://nodejs.org) 20 or newer and a [Discord application](https://discord.com/developers/applications) with a bot. The code also uses [GraphicsMagick](http://www.graphicsmagick.org) when drawing parts of the map.
 
-    $ docker run --rm -it -v ${pwd}/credentials:/app/credentials -v ${pwd}/instances:/app/instances -v ${pwd}/logs:/app/logs -e RPP_DISCORD_CLIENT_ID=111....1111 -e RPP_DISCORD_TOKEN=token --name rpp ghcr.io/alexemanuelol/rustplusplus
+1. In the Discord developer portal, turn on the **Server Members** and **Message Content** privileged intents.
+2. Invite the bot to your server with the `bot` and `applications.commands` scopes. It needs to manage roles and channels.
+3. Copy `.env.example` to `.env` and fill in your application ID and bot token.
+4. Install and start:
 
-or
+```bash
+npm install
+```
 
-    $ docker-compose up -d
+```bash
+npm start
+```
 
-Make sure you use the correct values for DISCORD_CLIENT_ID as well as DISCORD_TOKEN in the docker command/docker-compose.yml
+On Windows you can use `start-bot.bat` instead, which loads `.env` for you.
 
-## **Thanks to**
+Team data, credentials and logs are saved in `data/`. **Never share `.env` or `data/`:** they hold your bot token and your players' Rust+ credentials.
 
-**liamcottle**@GitHub - for the [rustplus.js](https://github.com/liamcottle/rustplus.js) library.
-<br>
-**.Vegas.#4844**@Discord - for the awesome icons!
+## Security
+
+Everyone who registers gives the bot host their Rust+ credentials, and these are stored unencrypted in `data/`. Only register with a bot run by someone you trust.
+
+## Credits and license
+
+pratinavv is built on [rustplusplus](https://github.com/alexemanuelol/rustplusplus) and uses [rustplus.js](https://github.com/liamcottle/rustplus.js). See [NOTICE.md](NOTICE.md) for details.
+
+Licensed under the [GNU General Public License v3.0](LICENSE).
+
+pratinavv is a fan project and is not affiliated with Facepunch Studios, Rust or Discord.

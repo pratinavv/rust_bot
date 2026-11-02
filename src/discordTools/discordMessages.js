@@ -55,20 +55,6 @@ module.exports = {
         }
     },
 
-    sendDecayingNotificationMessage: async function (guildId, serverId, entityId) {
-        const instance = Client.client.getInstance(guildId);
-        const entity = instance.serverList[serverId].storageMonitors[entityId];
-
-        const content = {
-            embeds: [DiscordEmbeds.getDecayingNotificationEmbed(guildId, serverId, entityId)],
-            files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
-        }
-
-        await module.exports.sendMessage(guildId, content, null, instance.channelId.events);
-    },
-
     sendServerChangeStateMessage: async function (guildId, serverId, state) {
         const instance = Client.client.getInstance(guildId);
 
@@ -249,39 +235,6 @@ module.exports = {
         }
     },
 
-    sendUpdateBattlemetricsOnlinePlayersInformationMessage: async function (rustplus, battlemetricsId) {
-        const instance = Client.client.getInstance(rustplus.guildId);
-
-        const content = {
-            embeds: [DiscordEmbeds.getUpdateBattlemetricsOnlinePlayersInformationEmbed(rustplus, battlemetricsId)]
-        }
-
-        const message = await module.exports.sendMessage(rustplus.guildId, content,
-            instance.informationMessageId.battlemetricsPlayers, instance.channelId.information);
-
-        if (message.id !== instance.informationMessageId.battlemetricsPlayers) {
-            instance.informationMessageId.battlemetricsPlayers = message.id;
-            Client.client.setInstance(rustplus.guildId, instance);
-        }
-    },
-
-    sendDiscordCommandResponseMessage: async function (rustplus, client, message, response) {
-        const content = {
-            embeds: [DiscordEmbeds.getDiscordCommandResponseEmbed(rustplus, response)]
-        }
-
-        await client.messageReply(message, content);
-    },
-
-    sendCredentialsShowMessage: async function (interaction) {
-        const content = {
-            embeds: [await DiscordEmbeds.getCredentialsShowEmbed(interaction.teamId)],
-            ephemeral: true
-        }
-
-        await Client.client.interactionEditReply(interaction, content);
-    },
-
     sendItemAvailableInVendingMachineMessage: async function (rustplus, str) {
         const instance = Client.client.getInstance(rustplus.guildId);
 
@@ -347,20 +300,6 @@ module.exports = {
         }
 
         await Client.client.interactionEditReply(interaction, content);
-    },
-
-    sendBattlemetricsEventMessage: async function (guildId, battlemetricsId, title, description, fields = null, everyone = false) {
-        const instance = Client.client.getInstance(guildId);
-
-        const content = {
-            embeds: [DiscordEmbeds.getBattlemetricsEventEmbed(guildId, battlemetricsId, title, description, fields)]
-        }
-
-        if (everyone) {
-            content.content = '@everyone';
-        }
-
-        await module.exports.sendMessage(guildId, content, null, instance.channelId.events);
     },
 
     sendItemMessage: async function (interaction, itemName, itemId, type) {

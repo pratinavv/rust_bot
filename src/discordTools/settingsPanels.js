@@ -1,4 +1,9 @@
 /*
+    Copyright (C) 2026 Pratinav Verma
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
+/*
     The settings menu: a few compact panels instead of one message per setting.
 
     Each panel is one message of up to 5 rows. Toggle buttons come first so their columns line up, followed by

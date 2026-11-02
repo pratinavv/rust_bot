@@ -49,15 +49,6 @@ class Items {
         return this.items[id].name;
     }
 
-    getDescription(id) {
-        if (!this.itemExist(id)) return undefined;
-        return this.items[id].description;
-    }
-
-    getIdByName(name) {
-        return Object.keys(this.items).find(id => this.items[id].name === name);
-    }
-
     getClosestItemIdByName(name) {
         const closestString = Utils.findClosestString(name, this.itemNames);
         if (closestString !== null) {

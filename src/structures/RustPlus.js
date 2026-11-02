@@ -24,9 +24,7 @@ const RustPlusLib = require('@liamcottle/rustplus.js');
 const Translate = require('translate');
 
 const Client = require('../../index.ts');
-const Config = require('../../config');
 const Constants = require('../util/constants.js');
-const Decay = require('../util/decay.js');
 const DiscordEmbeds = require('../discordTools/discordEmbeds');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 const DiscordTools = require('../discordTools/discordTools.js');
@@ -307,53 +305,6 @@ class RustPlus extends RustPlusLib {
         return true;
     }
 
-    async turnSmartSwitchAsync(id, value, timeout = 10000) {
-        if (value) {
-            return await this.turnSmartSwitchOnAsync(id, timeout);
-        }
-        else {
-            return await this.turnSmartSwitchOffAsync(id, timeout);
-        }
-    }
-
-    async turnSmartSwitchOnAsync(id, timeout = 10000) {
-        try {
-            return await this.setEntityValueAsync(id, true, timeout);
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async turnSmartSwitchOffAsync(id, timeout = 10000) {
-        try {
-            return await this.setEntityValueAsync(id, false, timeout);
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async setEntityValueAsync(id, value, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                entityId: id,
-                setEntityValue: {
-                    value: value
-                }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
     async sendTeamMessageAsync(message, timeout = 10000) {
         try {
             if (!(await this.waitForAvailableTokens(2))) {
@@ -364,24 +315,6 @@ class RustPlus extends RustPlusLib {
                 sendTeamMessage: {
                     message: message
                 }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async getEntityInfoAsync(id, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                entityId: id,
-                getEntityInfo: {}
             }, timeout).catch((e) => {
                 return e;
             });
@@ -476,65 +409,6 @@ class RustPlus extends RustPlusLib {
         }
     }
 
-    async subscribeToCameraAsync(identifier, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                cameraSubscribe: {
-                    cameraId: identifier
-                }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async unsubscribeFromCameraAsync(timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                cameraUnsubscribe: {}
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async sendCameraInputAsync(buttons, x, y, timeout = 1000) {
-        try {
-            if (!(await this.waitForAvailableTokens(0.01))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                cameraInput: {
-                    buttons: buttons,
-                    mouseDelta: {
-                        x: x,
-                        y: y
-                    }
-                }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
     async promoteToLeaderAsync(steamId, timeout = 10000) {
         try {
             if (!(await this.waitForAvailableTokens(1))) {
@@ -544,81 +418,6 @@ class RustPlus extends RustPlusLib {
             return await this.sendRequestAsync({
                 promoteToLeader: {
                     steamId: steamId
-                }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async getTeamChatAsync(timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                getTeamChat: {}
-            }, timeout).catch((e) => {
-                return e;
-            })
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async checkSubscriptionAsync(id, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                entityId: id,
-                checkSubscription: {}
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async setSubscriptionAsync(id, value, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(1))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                entityId: id,
-                setSubscription: {
-                    value: value
-                }
-            }, timeout).catch((e) => {
-                return e;
-            });
-        }
-        catch (e) {
-            return e;
-        }
-    }
-
-    async getCameraFrameAsync(identifier, frame, timeout = 10000) {
-        try {
-            if (!(await this.waitForAvailableTokens(2))) {
-                return { error: Client.client.intlGet(null, 'tokensDidNotReplenish') };
-            }
-
-            return await this.sendRequestAsync({
-                getCameraFrame: {
-                    identifier: identifier,
-                    frame: frame
                 }
             }, timeout).catch((e) => {
                 return e;
@@ -1771,7 +1570,6 @@ class RustPlus extends RustPlusLib {
                 }
                 const itemName = Client.client.items.getName(itemId);
 
-
                 if (instance.marketSubscriptionList[orderType].includes(itemId)) {
                     return Client.client.intlGet(this.guildId, 'alreadySubscribedToItem', {
                         name: itemName
@@ -1960,97 +1758,6 @@ class RustPlus extends RustPlusLib {
             `${amount}${Client.client.intlGet(this.guildId, 'noOneIsOnline')}`;
     }
 
-    getCommandPlayer(command) {
-        if (Config.battlemetrics.token === '') {
-            return null;
-        }
-
-        const instance = Client.client.getInstance(this.guildId);
-        const battlemetricsId = instance.serverList[this.serverId].battlemetricsId;
-        const prefix = this.generalSettings.prefix;
-        const commandPlayer = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxPlayer')}`;
-        const commandPlayerEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxPlayer')}`;
-        const commandPlayers = `${prefix}${Client.client.intlGet(this.guildId, 'commandSyntaxPlayers')}`;
-        const commandPlayersEn = `${prefix}${Client.client.intlGet('en', 'commandSyntaxPlayers')}`;
-
-        const bmInstance = Client.client.battlemetricsInstances[battlemetricsId];
-
-        if (!bmInstance || !bmInstance.lastUpdateSuccessful) {
-            return Client.client.intlGet(this.guildId, 'battlemetricsInstanceCouldNotBeFound', {
-                id: battlemetricsId
-            });
-        }
-
-        let foundPlayers = [];
-        if (command.toLowerCase() === `${commandPlayers}` || command.toLowerCase() === `${commandPlayersEn}`) {
-            foundPlayers = bmInstance.getOnlinePlayerIdsOrderedByTime();
-            if (foundPlayers.length === 0) {
-                return Client.client.intlGet(this.guildId, 'couldNotFindAnyPlayers');
-            }
-        }
-        else if (command.toLowerCase().startsWith(`${commandPlayer} `) ||
-            command.toLowerCase().startsWith(`${commandPlayerEn} `)) {
-
-            let name = null;
-            if (command.toLowerCase().startsWith(`${commandPlayer}`)) {
-                name = command.slice(`${commandPlayer} `.length).trim();
-            }
-            else {
-                name = command.slice(`${commandPlayerEn} `.length).trim();
-            }
-
-            for (const playerId of bmInstance.getOnlinePlayerIdsOrderedByTime()) {
-                if (bmInstance.players[playerId]['name'].includes(name)) foundPlayers.push(playerId);
-            }
-
-            if (foundPlayers.length === 0) {
-                return Client.client.intlGet(this.guildId, 'couldNotFindPlayer', {
-                    name: name
-                });
-            }
-        }
-        else {
-            return null;
-        }
-
-        const trademark = this.generalSettings.trademark;
-        const trademarkString = (trademark === 'NOT SHOWING') ? '' : `${trademark} | `;
-        const messageMaxLength = Constants.MAX_LENGTH_TEAM_MESSAGE - trademarkString.length;
-        const leftLength = `...xxx ${Client.client.intlGet(this.guildId, 'more')}.`.length;
-
-        let string = '';
-        let playerIndex = 0;
-        for (const playerId of foundPlayers) {
-            const time = bmInstance.getOnlineTime(playerId);
-            const playerString = `${bmInstance.players[playerId]['name']} [${time[1]}], `;
-
-            if ((string.length + playerString.length + leftLength) < messageMaxLength) {
-                string += playerString;
-            }
-            else if ((string.length + playerString.length + leftLength) > messageMaxLength) {
-                break;
-            }
-
-            playerIndex += 1;
-        }
-
-        if (string !== '') {
-            string = string.slice(0, -2);
-
-            if (playerIndex < foundPlayers.length) {
-                return Client.client.intlGet(this.guildId, 'morePlayers', {
-                    players: string,
-                    number: foundPlayers.length - playerIndex
-                });
-            }
-            else {
-                return `${string}.`;
-            }
-        }
-
-        return null;
-    }
-
     getCommandPop(isInfoChannel = false) {
         if (isInfoChannel) {
             return `${this.info.players}${this.info.isQueue() ? `(${this.info.queuedPlayers})` : ''}` +
@@ -2235,8 +1942,6 @@ class RustPlus extends RustPlusLib {
             });
             return str;
         }
-
-
 
         let str = `${itemName}: `;
         if (researchDetails[2].researchTable !== null) {

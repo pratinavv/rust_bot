@@ -41,13 +41,11 @@ module.exports = (client, guild) => {
                 map: null,
                 server: null,
                 event: null,
-                team: null,
-                battlemetricsPlayers: null
+                team: null
             },
             activeServer: null,
             serverList: {},
             serverListLite: {},
-            trackers: {},
             marketSubscriptionList: {
                 all: [],
                 buy: [],
@@ -63,114 +61,6 @@ module.exports = (client, guild) => {
     }
     else {
         instance = InstanceUtils.readInstanceFile(guild.id);
-
-        if (!instance.hasOwnProperty('firstTime')) {
-            instance.firstTime = true;
-        }
-
-        if (!instance.hasOwnProperty('role')) {
-            instance.role = null;
-        }
-
-        if (!instance.hasOwnProperty('generalSettings')) {
-            instance.generalSettings = client.readGeneralSettingsTemplate();
-        }
-        else {
-            const generalSettings = client.readGeneralSettingsTemplate();
-
-            for (const [key, value] of Object.entries(generalSettings)) {
-                if (!instance.generalSettings.hasOwnProperty(key)) {
-                    instance.generalSettings[key] = value;
-                }
-            }
-        }
-
-        if (!instance.hasOwnProperty('notificationSettings')) {
-            instance.notificationSettings = client.readNotificationSettingsTemplate();
-        }
-        else {
-            const notificationSettings = client.readNotificationSettingsTemplate();
-
-            for (const [key, value] of Object.entries(notificationSettings)) {
-                if (!instance.notificationSettings.hasOwnProperty(key)) {
-                    instance.notificationSettings[key] = value;
-                }
-                else {
-                    for (const [setting, settingValue] of Object.entries(value)) {
-                        if (!instance.notificationSettings[key].hasOwnProperty(setting)) {
-                            instance.notificationSettings[key][setting] = settingValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!instance.hasOwnProperty('channelId')) {
-            instance.channelId = {
-                category: null,
-                information: null,
-                events: null,
-                teamchat: null
-            }
-        }
-        else {
-            if (!instance.channelId.hasOwnProperty('category')) instance.channelId.category = null;
-            if (!instance.channelId.hasOwnProperty('information')) instance.channelId.information = null;
-            if (!instance.channelId.hasOwnProperty('events')) instance.channelId.events = null;
-            if (!instance.channelId.hasOwnProperty('teamchat')) instance.channelId.teamchat = null;
-        }
-
-        if (!instance.hasOwnProperty('informationMessageId')) {
-            instance.informationMessageId = {
-                map: null,
-                server: null,
-                event: null,
-                team: null,
-                battlemetricsPlayers: null
-            }
-        }
-        else {
-            if (!instance.informationMessageId.hasOwnProperty('map')) instance.informationMessageId.map = null;
-            if (!instance.informationMessageId.hasOwnProperty('server')) instance.informationMessageId.server = null;
-            if (!instance.informationMessageId.hasOwnProperty('event')) instance.informationMessageId.event = null;
-            if (!instance.informationMessageId.hasOwnProperty('team')) instance.informationMessageId.team = null;
-            if (!instance.informationMessageId.hasOwnProperty('team'))
-                instance.informationMessageId.battlemetricsPlayers = null;
-        }
-
-        if (!instance.hasOwnProperty('activeServer')) instance.activeServer = null;
-        if (!instance.hasOwnProperty('serverList')) instance.serverList = {};
-        if (!instance.hasOwnProperty('serverListLite')) instance.serverListLite = {};
-        if (!instance.hasOwnProperty('trackers')) instance.trackers = {};
-        if (!instance.hasOwnProperty('marketSubscriptionList')) instance.marketSubscriptionList = {
-            all: [],
-            buy: [],
-            sell: []
-        }
-        if (!instance.marketSubscriptionList.hasOwnProperty('all')) instance.marketSubscriptionList['all'] = [];
-        if (!instance.marketSubscriptionList.hasOwnProperty('buy')) instance.marketSubscriptionList['buy'] = [];
-        if (!instance.marketSubscriptionList.hasOwnProperty('sell')) instance.marketSubscriptionList['sell'] = [];
-        if (!instance.hasOwnProperty('teamChatColors')) instance.teamChatColors = {};
-        if (!instance.hasOwnProperty('blacklist')) instance.blacklist = {
-            discordIds: [],
-            steamIds: []
-        }
-        if (!instance.blacklist.hasOwnProperty('discordIds')) instance.blacklist['discordIds'] = [];
-        if (!instance.blacklist.hasOwnProperty('steamIds')) instance.blacklist['steamIds'] = [];
-        if (!instance.hasOwnProperty('aliases')) instance.aliases = [];
-
-        for (const serverId of Object.keys(instance.serverList)) {
-            if (!Object.keys(instance.serverListLite).includes(serverId)) {
-                instance.serverListLite[serverId] = new Object();
-            }
-
-            instance.serverListLite[serverId][instance.serverList[serverId].steamId] = {
-                serverIp: instance.serverList[serverId].serverIp,
-                appPort: instance.serverList[serverId].appPort,
-                steamId: instance.serverList[serverId].steamId,
-                playerToken: instance.serverList[serverId].playerToken
-            };
-        }
     }
 
     /* Check every serverList for missing keys */
@@ -178,7 +68,8 @@ module.exports = (client, guild) => {
         if (!content.hasOwnProperty('customCameraGroups')) content.customCameraGroups = {};
     }
 
-    /* In-game chat is the same for every team. */
+    /* In-game chat and language are the same for every team. */
+    instance.generalSettings.language = 'en';
     instance.generalSettings.prefix = '!';
     instance.generalSettings.trademark = 'pratinavv';
     instance.generalSettings.commandDelay = 0;

@@ -1,3 +1,8 @@
+/*
+    Copyright (C) 2026 Pratinav Verma
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
 const Path = require('path');
 
 const Config = require('../../config');

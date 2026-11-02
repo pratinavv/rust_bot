@@ -78,9 +78,6 @@ module.exports = {
                 client.log(client.intlGet(null, 'errorCap'), str, 'error');
             }
         }
-        else if (interaction.type === Discord.InteractionType.ModalSubmit) {
-            require('../handlers/modalHandler')(client, interaction);
-        }
         else {
             client.log(client.intlGet(null, 'errorCap'), client.intlGet(null, 'unknownInteraction'), 'error');
 

@@ -20,11 +20,6 @@
 
 const Discord = require('discord.js');
 
-const Config = require('../../config');
-const DiscordMessages = require('../discordTools/discordMessages.js');
-const DiscordTools = require('../discordTools/discordTools.js');
-const DiscordButtons = require('../discordTools/discordButtons.js');
-const DiscordModals = require('../discordTools/discordModals.js');
 const SettingsPanels = require('../discordTools/settingsPanels.js');
 
 module.exports = async (client, interaction) => {
@@ -190,100 +185,6 @@ module.exports = async (client, interaction) => {
         await client.interactionUpdate(interaction, {
             components: SettingsPanels.getComponents(guildId, interaction.customId)
         });
-    }
-    else if (Config.battlemetrics.token !== '' && interaction.customId === 'DisplayInformationBattlemetricsAllOnlinePlayers') {
-        instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers =
-            !instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.displayInformationBattlemetricsAllOnlinePlayers =
-            instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers;
-
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
-            id: `${verifyId}`,
-            value: `${instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers}`
-        }));
-
-        await client.interactionUpdate(interaction, {
-            components: [DiscordButtons.getDisplayInformationBattlemetricsAllOnlinePlayersButton(guildId,
-                instance.generalSettings.displayInformationBattlemetricsAllOnlinePlayers)]
-        });
-    }
-    else if (Config.battlemetrics.token !== '' && interaction.customId === 'BattlemetricsServerNameChanges') {
-        instance.generalSettings.battlemetricsServerNameChanges =
-            !instance.generalSettings.battlemetricsServerNameChanges;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.battlemetricsServerNameChanges =
-            instance.generalSettings.battlemetricsServerNameChanges;
-
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
-            id: `${verifyId}`,
-            value: `${instance.generalSettings.battlemetricsServerNameChanges}`
-        }));
-
-        await client.interactionUpdate(interaction, {
-            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
-        });
-    }
-    else if (Config.battlemetrics.token !== '' && interaction.customId === 'BattlemetricsGlobalNameChanges') {
-        instance.generalSettings.battlemetricsGlobalNameChanges =
-            !instance.generalSettings.battlemetricsGlobalNameChanges;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.battlemetricsGlobalNameChanges =
-            instance.generalSettings.battlemetricsGlobalNameChanges;
-
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
-            id: `${verifyId}`,
-            value: `${instance.generalSettings.battlemetricsGlobalNameChanges}`
-        }));
-
-        await client.interactionUpdate(interaction, {
-            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
-        });
-    }
-    else if (Config.battlemetrics.token !== '' && interaction.customId === 'BattlemetricsGlobalLogin') {
-        instance.generalSettings.battlemetricsGlobalLogin =
-            !instance.generalSettings.battlemetricsGlobalLogin;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.battlemetricsGlobalLogin =
-            instance.generalSettings.battlemetricsGlobalLogin;
-
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
-            id: `${verifyId}`,
-            value: `${instance.generalSettings.battlemetricsGlobalLogin}`
-        }));
-
-        await client.interactionUpdate(interaction, {
-            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
-        });
-    }
-    else if (Config.battlemetrics.token !== '' && interaction.customId === 'BattlemetricsGlobalLogout') {
-        instance.generalSettings.battlemetricsGlobalLogout =
-            !instance.generalSettings.battlemetricsGlobalLogout;
-        client.setInstance(guildId, instance);
-
-        if (rustplus) rustplus.generalSettings.battlemetricsGlobalLogout =
-            instance.generalSettings.battlemetricsGlobalLogout;
-
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
-            id: `${verifyId}`,
-            value: `${instance.generalSettings.battlemetricsGlobalLogout}`
-        }));
-
-        await client.interactionUpdate(interaction, {
-            components: DiscordButtons.getSubscribeToChangesBattlemetricsButtons(guildId)
-        });
-    }
-    else if (interaction.customId === 'RecycleDelete') {
-        if (Config.discord.needAdminPrivileges && !client.isAdministrator(interaction)) {
-            interaction.deferUpdate();
-            return;
-        }
-
-        await interaction.message.delete();
     }
 
     client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'userButtonInteractionSuccess', {

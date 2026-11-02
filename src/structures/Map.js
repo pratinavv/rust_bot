@@ -293,17 +293,6 @@ class Map {
     isMonumentsChanged(map) { return ((JSON.stringify(this.monuments)) !== (JSON.stringify(map.monuments))); }
     isBackgroundChanged(map) { return ((this.background) !== (map.background)); }
 
-    updateMap(map) {
-        this.width = map.width;
-        this.height = map.height;
-        Client.client.rustplusMaps[this.rustplus.guildId] = map.jpgImage;
-        this.oceanMargin = map.oceanMargin;
-        this.monuments = map.monuments;
-        this.background = map.background;
-
-        this.resetImageAndMeta();
-    }
-
     async resetImageAndMeta() {
         await this.writeMapClean();
         await this.setupFont();
@@ -312,17 +301,6 @@ class Map {
 
     async writeMapClean() {
         await Fs.writeFileSync(this.mapMarkerImageMeta.map.image, Client.client.rustplusMaps[this.rustplus.guildId]);
-    }
-
-    async setupFont() {
-        if (this.rustplus.generalSettings.language === 'en') {
-            this.font = await Jimp.loadFont(
-                Path.join(__dirname, '..', 'resources/fonts/PermanentMarker.fnt'));
-        }
-        else {
-            this.font = await Jimp.loadFont(
-                Path.join(__dirname, '..', 'resources/fonts/YuGothic.fnt'));
-        }
     }
 
     async setupMapMarkerImages() {
@@ -485,16 +463,6 @@ class Map {
             }
         }
         return null;
-    }
-
-    getMonumentsByName(monumentName) {
-        let matches = [];
-        for (let monument of this.monuments) {
-            if (monument.token === monumentName) {
-                matches.push(monument);
-            }
-        }
-        return matches;
     }
 
     calculateImageXY(coords) {

@@ -1,4 +1,9 @@
 /*
+    Copyright (C) 2026 Pratinav Verma
+    SPDX-License-Identifier: GPL-3.0-or-later
+*/
+
+/*
     Team lifecycle: creating, joining, leaving, passing leadership and closing teams.
 
     Each team has one Rust+ connection, normally the leader's, so an event only produces one alert.

@@ -18,7 +18,6 @@
 
 */
 
-const DiscordMessages = require('../discordTools/discordMessages.js');
 
 module.exports = {
     name: 'error',
