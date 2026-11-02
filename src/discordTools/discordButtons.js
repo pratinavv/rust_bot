@@ -47,7 +47,7 @@ module.exports = {
                 module.exports.getButton({
                     style: Discord.ButtonStyle.Link,
                     label: 'REPOSITORY',
-                    url: 'https://github.com/pratinavv/pratinavv'
+                    url: 'https://github.com/pratinavv/rust_bot'
                 }),
                 module.exports.getButton({
                     style: Discord.ButtonStyle.Link,

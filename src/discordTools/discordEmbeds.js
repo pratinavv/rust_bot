@@ -277,7 +277,7 @@ module.exports = {
     },
 
     getHelpEmbed: function (guildId) {
-        const repository = 'https://github.com/pratinavv/pratinavv';
+        const repository = 'https://github.com/pratinavv/rust_bot';
         const credentials = `${repository}#join-a-team`;
         const pairServer = `${repository}#create-a-team`;
         const commands = `${repository}#commands`;

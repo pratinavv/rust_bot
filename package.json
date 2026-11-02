@@ -10,14 +10,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/pratinavv/pratinavv.git"
+        "url": "https://github.com/pratinavv/rust_bot.git"
     },
     "author": "Pratinav Verma",
     "license": "GPL-3.0-or-later",
     "bugs": {
-        "url": "https://github.com/pratinavv/pratinavv/issues"
+        "url": "https://github.com/pratinavv/rust_bot/issues"
     },
-    "homepage": "https://github.com/pratinavv/pratinavv#readme",
+    "homepage": "https://github.com/pratinavv/rust_bot#readme",
     "dependencies": {
         "@discordjs/rest": "^2.5.1",
         "@formatjs/intl": "^2.6.9",
