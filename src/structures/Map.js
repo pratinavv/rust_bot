@@ -303,6 +303,10 @@ class Map {
         await Fs.writeFileSync(this.mapMarkerImageMeta.map.image, Client.client.rustplusMaps[this.rustplus.guildId]);
     }
 
+    async setupFont() {
+        this.font = await Jimp.loadFont(Path.join(__dirname, '..', 'resources/fonts/PermanentMarker.fnt'));
+    }
+
     async setupMapMarkerImages() {
         for (const [marker, content] of Object.entries(this.mapMarkerImageMeta)) {
             content.jimp = await Jimp.read(content.image);
