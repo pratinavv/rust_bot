@@ -34,17 +34,8 @@ module.exports = (client, guild) => {
             channelId: {
                 category: null,
                 information: null,
-                servers: null,
-                settings: null,
-                commands: null,
                 events: null,
-                teamchat: null,
-                switches: null,
-                switchGroups: null,
-                alarms: null,
-                storageMonitors: null,
-                activity: null,
-                trackers: null
+                teamchat: null
             },
             informationMessageId: {
                 map: null,
@@ -118,33 +109,15 @@ module.exports = (client, guild) => {
             instance.channelId = {
                 category: null,
                 information: null,
-                servers: null,
-                settings: null,
-                commands: null,
                 events: null,
-                teamchat: null,
-                switches: null,
-                switchGroups: null,
-                alarms: null,
-                storageMonitors: null,
-                activity: null,
-                trackers: null
+                teamchat: null
             }
         }
         else {
             if (!instance.channelId.hasOwnProperty('category')) instance.channelId.category = null;
             if (!instance.channelId.hasOwnProperty('information')) instance.channelId.information = null;
-            if (!instance.channelId.hasOwnProperty('servers')) instance.channelId.servers = null;
-            if (!instance.channelId.hasOwnProperty('settings')) instance.channelId.settings = null;
-            if (!instance.channelId.hasOwnProperty('commands')) instance.channelId.commands = null;
             if (!instance.channelId.hasOwnProperty('events')) instance.channelId.events = null;
             if (!instance.channelId.hasOwnProperty('teamchat')) instance.channelId.teamchat = null;
-            if (!instance.channelId.hasOwnProperty('switches')) instance.channelId.switches = null;
-            if (!instance.channelId.hasOwnProperty('switchGroups')) instance.channelId.switchGroups = null;
-            if (!instance.channelId.hasOwnProperty('alarms')) instance.channelId.alarms = null;
-            if (!instance.channelId.hasOwnProperty('storageMonitors')) instance.channelId.storageMonitors = null;
-            if (!instance.channelId.hasOwnProperty('activity')) instance.channelId.activity = null;
-            if (!instance.channelId.hasOwnProperty('trackers')) instance.channelId.trackers = null;
         }
 
         if (!instance.hasOwnProperty('informationMessageId')) {
@@ -204,6 +177,14 @@ module.exports = (client, guild) => {
     for (const [serverId, content] of Object.entries(instance.serverList)) {
         if (!content.hasOwnProperty('customCameraGroups')) content.customCameraGroups = {};
     }
+
+    /* In-game chat is the same for every team. */
+    instance.generalSettings.prefix = '!';
+    instance.generalSettings.trademark = 'pratinavv';
+    instance.generalSettings.commandDelay = 0;
+
+    /* An alert is either on everywhere or off everywhere. */
+    for (const setting of Object.values(instance.notificationSettings)) setting.inGame = setting.discord;
 
     client.setInstance(guild.id, instance);
 };

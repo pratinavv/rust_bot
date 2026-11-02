@@ -18,20 +18,24 @@
 
 */
 
-const DiscordCommandHandler = require('../handlers/discordCommandHandler.js');
 const DiscordTools = require('../discordTools/discordTools');
+const TeamManager = require('../util/teamManager.js');
 
 module.exports = {
     name: 'messageCreate',
     async execute(client, message) {
-        const instance = client.getInstance(message.guild.id);
-        const rustplus = client.rustplusInstances[message.guild.id];
+        const team = TeamManager.teamFromChannel(client, message.channel);
+        if (!team) return;
+
+        message.teamId = team.id;
+        const instance = client.getInstance(team.id);
+        const rustplus = client.rustplusInstances[team.id];
 
         if (message.author.bot || !rustplus || (rustplus && !rustplus.isOperational)) return;
 
         if (instance.blacklist['discordIds'].includes(message.author.id) &&
             Object.values(instance.channelId).includes(message.channelId)) {
-            const guild = DiscordTools.getGuild(message.guild.id);
+            const guild = DiscordTools.getGuild(team.id);
             const channel = DiscordTools.getTextChannelById(guild.id, message.channelId);
             client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `userPartOfBlacklistDiscord`, {
                 guild: `${guild.name} (${guild.id})`,
@@ -42,11 +46,8 @@ module.exports = {
             return;
         }
 
-        if (message.channelId === instance.channelId.commands) {
-            await DiscordCommandHandler.discordCommandHandler(rustplus, client, message);
-        }
-        else if (message.channelId === instance.channelId.teamchat) {
-            const guild = DiscordTools.getGuild(message.guild.id);
+        if (message.channelId === instance.channelId.teamchat) {
+            const guild = DiscordTools.getGuild(team.id);
             const channel = DiscordTools.getTextChannelById(guild.id, message.channelId);
             client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, `logDiscordMessage`, {
                 guild: `${guild.name} (${guild.id})`,

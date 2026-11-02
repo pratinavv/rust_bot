@@ -75,18 +75,18 @@ module.exports = {
 		let battlemetricsId = interaction.options.getString('battlemetricsid');
 
 		if (!battlemetricsId) {
-			const rustplus = client.rustplusInstances[interaction.guildId];
+			const rustplus = client.rustplusInstances[interaction.teamId];
 			if (!rustplus || (rustplus && !rustplus.isOperational)) {
-				const str = client.intlGet(interaction.guildId, 'notConnectedToRustServer');
+				const str = client.intlGet(interaction.teamId, 'notConnectedToRustServer');
 				await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 				client.log(client.intlGet(null, 'warningCap'), str);
 				return;
 			}
 
-			const instance = client.getInstance(interaction.guildId);
+			const instance = client.getInstance(interaction.teamId);
 			const server = instance.serverList[rustplus.serverId];
 			if (!server || (server && !server.battlemetricsId)) {
-				const str = client.intlGet(interaction.guildId, 'invalidBattlemetricsId');
+				const str = client.intlGet(interaction.teamId, 'invalidBattlemetricsId');
 				await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 				client.log(client.intlGet(null, 'warningCap'), str);
 				return;
@@ -97,7 +97,7 @@ module.exports = {
 
 		const bmInstance = client.battlemetricsInstances[battlemetricsId];
 		if (!bmInstance || !bmInstance.lastUpdateSuccessful) {
-			const str = client.intlGet(interaction.guildId, 'battlemetricsInstanceCouldNotBeFound', {
+			const str = client.intlGet(interaction.teamId, 'battlemetricsInstanceCouldNotBeFound', {
 				id: battlemetricsId
 			});
 			await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
@@ -154,7 +154,7 @@ async function playersNameHandler(client, interaction, battlemetricsId) {
 	}
 
 	if (foundPlayers.length === 0) {
-		const str = client.intlGet(interaction.guildId, 'couldNotFindAnyPlayers');
+		const str = client.intlGet(interaction.teamId, 'couldNotFindAnyPlayers');
 		await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 		client.log(client.intlGet(null, 'warningCap'), str);
 		return;
@@ -173,7 +173,7 @@ async function playersPlayerIdHandler(client, interaction, battlemetricsId) {
 	const playerId = interaction.options.getString('playerid');
 
 	if (!bmInstance.players.hasOwnProperty(playerId)) {
-		const str = client.intlGet(interaction.guildId, 'couldNotFindPlayerId', { id: playerId });
+		const str = client.intlGet(interaction.teamId, 'couldNotFindPlayerId', { id: playerId });
 		await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 		client.log(client.intlGet(null, 'warningCap'), str);
 		return;
@@ -184,7 +184,7 @@ async function playersPlayerIdHandler(client, interaction, battlemetricsId) {
 }
 
 async function displaySpecificUser(client, interaction, battlemetricsId, playerId) {
-	const guildId = interaction.guildId;
+	const guildId = interaction.teamId;
 	const bmInstance = client.battlemetricsInstances[battlemetricsId];
 
 	const userName = bmInstance.players[playerId]['name'];
@@ -222,7 +222,7 @@ async function displaySpecificUser(client, interaction, battlemetricsId, playerI
 	description += `__**${onOffString}:**__ ${time !== null ? `[${time[1]}]` : ''}\n`;
 
 	const embed = DiscordEmbeds.getEmbed({
-		title: `${client.intlGet(interaction.guildId, 'playersSearch')}: ${userName}`,
+		title: `${client.intlGet(interaction.teamId, 'playersSearch')}: ${userName}`,
 		color: Constants.COLOR_DEFAULT,
 		description: description,
 		footer: { text: bmInstance.server_name }
@@ -312,8 +312,8 @@ async function displaySpecificUser(client, interaction, battlemetricsId, playerI
 	embed.setFields(fields);
 
 	await client.interactionEditReply(interaction, { embeds: [embed] });
-	client.log(client.intlGet(interaction.guildId, 'infoCap'),
-		client.intlGet(interaction.guildId, 'displayingOnlinePlayers'));
+	client.log(client.intlGet(interaction.teamId, 'infoCap'),
+		client.intlGet(interaction.teamId, 'displayingOnlinePlayers'));
 }
 
 async function displaySeveralUsers(client, interaction, battlemetricsId, playerIds, search) {
@@ -322,14 +322,14 @@ async function displaySeveralUsers(client, interaction, battlemetricsId, playerI
 	let totalCharacters = 0;
 	let fieldCharacters = 0;
 
-	let title = client.intlGet(interaction.guildId, 'playersSearch');
+	let title = client.intlGet(interaction.teamId, 'playersSearch');
 	title += search === null ? '' : `: ${search}`;
 	let footer = { text: bmInstance.server_name };
 
 	totalCharacters += title.length;
 	totalCharacters += bmInstance.server_name.length;
-	totalCharacters += client.intlGet(interaction.guildId, 'andMorePlayers', { number: 100 }).length;
-	totalCharacters += `${client.intlGet(interaction.guildId, 'players')}`.length;
+	totalCharacters += client.intlGet(interaction.teamId, 'andMorePlayers', { number: 100 }).length;
+	totalCharacters += `${client.intlGet(interaction.teamId, 'players')}`.length;
 
 	const fields = [''];
 	let fieldIndex = 0;
@@ -374,7 +374,7 @@ async function displaySeveralUsers(client, interaction, battlemetricsId, playerI
 	});
 
 	if (isEmbedFull) {
-		embed.setDescription(client.intlGet(interaction.guildId, 'andMorePlayers', {
+		embed.setDescription(client.intlGet(interaction.teamId, 'andMorePlayers', {
 			number: playerIds.length - playerCounter
 		}));
 	}
@@ -382,7 +382,7 @@ async function displaySeveralUsers(client, interaction, battlemetricsId, playerI
 	let fieldCounter = 0;
 	for (const field of fields) {
 		embed.addFields({
-			name: fieldCounter === 0 ? client.intlGet(interaction.guildId, 'players') : '\u200B',
+			name: fieldCounter === 0 ? client.intlGet(interaction.teamId, 'players') : '\u200B',
 			value: field === '' ? '\u200B' : field,
 			inline: true
 		});
@@ -390,6 +390,6 @@ async function displaySeveralUsers(client, interaction, battlemetricsId, playerI
 	}
 
 	await client.interactionEditReply(interaction, { embeds: [embed] });
-	client.log(client.intlGet(interaction.guildId, 'infoCap'),
-		client.intlGet(interaction.guildId, 'displayingOnlinePlayers'));
+	client.log(client.intlGet(interaction.teamId, 'infoCap'),
+		client.intlGet(interaction.teamId, 'displayingOnlinePlayers'));
 }

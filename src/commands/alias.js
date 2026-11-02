@@ -86,7 +86,7 @@ module.exports = {
 };
 
 async function addAlias(client, interaction) {
-	const guildId = interaction.guildId;
+	const guildId = interaction.teamId;
 	const instance = client.getInstance(guildId);
 
 	const aliasParameter = interaction.options.getString('alias');
@@ -117,7 +117,7 @@ async function addAlias(client, interaction) {
 }
 
 async function removeAlias(client, interaction) {
-	const guildId = interaction.guildId;
+	const guildId = interaction.teamId;
 	const instance = client.getInstance(guildId);
 
 	const indexParameter = interaction.options.getInteger('index');
@@ -139,7 +139,7 @@ async function removeAlias(client, interaction) {
 }
 
 async function showAlias(client, interaction) {
-	const guildId = interaction.guildId;
+	const guildId = interaction.teamId;
 	const instance = client.getInstance(guildId);
 
 	const title = client.intlGet(guildId, 'aliases');

@@ -21,6 +21,7 @@
 const Fs = require('fs');
 
 const Client = require('../../index.ts');
+const Teams = require('./teams.js');
 const dataPath = require('./dataPaths');
 
 module.exports = {
@@ -52,9 +53,18 @@ module.exports = {
         Fs.writeFileSync(path, JSON.stringify(instance, null, 2));
     },
 
+    /* Credentials are stored per Discord server. For a team id this returns only that team's members. */
     readCredentialsFile: function (guildId) {
-        const path = dataPath('credentials', `${guildId}.json`);
-        return JSON.parse(Fs.readFileSync(path, 'utf8'));
+        const team = Teams.get(guildId);
+        const path = dataPath('credentials', `${team ? team.guildId : guildId}.json`);
+        const credentials = JSON.parse(Fs.readFileSync(path, 'utf8'));
+        if (!team) return credentials;
+
+        const view = { hoster: team.hostSteamId };
+        for (const steamId of Teams.steamIdsOf(team)) {
+            if (credentials[steamId]) view[steamId] = credentials[steamId];
+        }
+        return view;
     },
 
     writeCredentialsFile: function (guildId, credentials) {

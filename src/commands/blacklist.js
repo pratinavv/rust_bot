@@ -61,7 +61,7 @@ module.exports = {
 	},
 
 	async execute(client, interaction) {
-		const guildId = interaction.guildId;
+		const guildId = interaction.teamId;
 		const instance = client.getInstance(guildId);
 
 		const verifyId = Math.floor(100000 + Math.random() * 900000);

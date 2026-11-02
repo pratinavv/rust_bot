@@ -18,14 +18,12 @@
 
 */
 
-const _ = require('lodash');
 const Builder = require('@discordjs/builders');
 
-const Config = require('../../config');
 const DiscordEmbeds = require('../discordTools/discordEmbeds.js');
-const DiscordMessages = require('../discordTools/discordMessages.js');
-const DiscordTools = require('../discordTools/discordTools.js');
 const InstanceUtils = require('../util/instanceUtils.js');
+const TeamManager = require('../util/teamManager.js');
+const Teams = require('../util/teams.js');
 
 module.exports = {
     name: 'credentials',
@@ -56,52 +54,32 @@ module.exports = {
                 .addStringOption(option => option
                     .setName('expire_date')
                     .setDescription('Expire date of the credentials.')
-                    .setRequired(true))
-                .addBooleanOption(option => option
-                    .setName('host')
-                    .setDescription('Host the bot')
-                    .setRequired(false)))
+                    .setRequired(true)))
             .addSubcommand(subcommand => subcommand
                 .setName('remove')
-                .setDescription(client.intlGet(guildId, 'commandsCredentialsRemoveDesc'))
-                .addStringOption(option => option
-                    .setName('steam_id')
-                    .setDescription(client.intlGet(guildId, 'commandsCredentialsRemoveSteamIdDesc'))
-                    .setRequired(false)))
+                .setDescription(client.intlGet(guildId, 'commandsCredentialsRemoveDesc')))
             .addSubcommand(subcommand => subcommand
                 .setName('show')
-                .setDescription(client.intlGet(guildId, 'commandsCredentialsShowDesc')))
-            .addSubcommand(subcommand => subcommand
-                .setName('set_hoster')
-                .setDescription(client.intlGet(guildId, 'commandsCredentialsSetHosterDesc'))
-                .addStringOption(option => option
-                    .setName('steam_id')
-                    .setDescription(client.intlGet(guildId, 'commandsCredentialsSetHosterSteamIdDesc'))
-                    .setRequired(false)));
+                .setDescription(client.intlGet(guildId, 'commandsCredentialsShowDesc')));
     },
 
     async execute(client, interaction) {
         const verifyId = Math.floor(100000 + Math.random() * 900000);
         client.logInteraction(interaction, verifyId, 'slashCommand');
 
-        if (!await client.validatePermissions(interaction)) return;
         await interaction.deferReply({ ephemeral: true });
 
         switch (interaction.options.getSubcommand()) {
             case 'add': {
-                addCredentials(client, interaction, verifyId);
+                await addCredentials(client, interaction);
             } break;
 
             case 'remove': {
-                removeCredentials(client, interaction, verifyId);
+                await removeCredentials(client, interaction);
             } break;
 
             case 'show': {
-                showCredentials(client, interaction, verifyId);
-            } break;
-
-            case 'set_hoster': {
-                setHosterCredentials(client, interaction, verifyId);
+                await showCredentials(client, interaction);
             } break;
 
             default: {
@@ -110,193 +88,69 @@ module.exports = {
     },
 };
 
-async function addCredentials(client, interaction, verifyId) {
-    const guildId = interaction.guildId;
-    const credentials = InstanceUtils.readCredentialsFile(guildId);
-    const steamId = interaction.options.getString('steam_id');
-    const isHoster = interaction.options.getBoolean('host') || Object.keys(credentials).length === 1;
-
-    if (Object.keys(credentials) !== 1 && isHoster) {
-        if (Config.discord.needAdminPrivileges && !client.isAdministrator(interaction)) {
-            const str = client.intlGet(interaction.guildId, 'missingPermission');
-            client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-            client.log(client.intlGet(null, 'warningCap'), str);
-            return;
-        }
-    }
-
-    if (steamId in credentials) {
-        const str = client.intlGet(guildId, 'credentialsAlreadyRegistered', { steamId: steamId });
-        await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-        client.log(client.intlGet(null, 'warningCap'), str);
-        return;
-    }
-
-    credentials[steamId] = new Object();
-    credentials[steamId].gcm = new Object();
-    credentials[steamId].gcm.android_id = interaction.options.getString('gcm_android_id');
-    credentials[steamId].gcm.security_token = interaction.options.getString('gcm_security_token');
-    credentials[steamId].issued_date = interaction.options.getString('issued_date');
-    credentials[steamId].expire_date = interaction.options.getString('expire_date');
-    credentials[steamId].discord_user_id = interaction.member.user.id;
-
-    const prevHoster = credentials.hoster;
-    if (isHoster) credentials.hoster = steamId;
-
-    InstanceUtils.writeCredentialsFile(guildId, credentials);
-
-    /* Start Fcm Listener */
-    if (isHoster) {
-        require('../util/FcmListener')(client, DiscordTools.getGuild(interaction.guildId));
-        if (prevHoster !== null) {
-            require('../util/FcmListenerLite')(client, DiscordTools.getGuild(interaction.guildId), prevHoster);
-        }
-    }
-    else {
-        require('../util/FcmListenerLite')(client, DiscordTools.getGuild(interaction.guildId), steamId);
-
-        const rustplus = client.rustplusInstances[guildId];
-        if (rustplus && rustplus.team.leaderSteamId === steamId) {
-            rustplus.updateLeaderRustPlusLiteInstance();
-        }
-    }
-
-    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
-        id: `${verifyId}`,
-        value: `add, ${steamId}, ` +
-            `${credentials[steamId].discord_user_id}, ` +
-            `${isHoster}, ` +
-            `${credentials[steamId].issued_date}, ` +
-            `${credentials[steamId].expire_date}`
-    }));
-
-    const str = client.intlGet(interaction.guildId, 'credentialsAddedSuccessfully', { steamId: steamId });
-    await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str));
-    client.log(client.intlGet(null, 'infoCap'), str);
+async function reply(client, interaction, color, key, vars = {}) {
+    await client.interactionEditReply(interaction,
+        DiscordEmbeds.getActionInfoEmbed(color, client.intlGet(null, key, vars)));
 }
 
-async function removeCredentials(client, interaction, verifyId) {
+async function addCredentials(client, interaction) {
     const guildId = interaction.guildId;
+    const discordId = interaction.user.id;
     const credentials = InstanceUtils.readCredentialsFile(guildId);
-    let steamId = interaction.options.getString('steam_id');
+    const steamId = interaction.options.getString('steam_id').trim();
 
-    if (steamId && (steamId in credentials) && credentials[steamId].discord_user_id !== interaction.member.user.id) {
-        if (Config.discord.needAdminPrivileges && !client.isAdministrator(interaction)) {
-            const str = client.intlGet(interaction.guildId, 'missingPermission');
-            client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-            client.log(client.intlGet(null, 'warningCap'), str);
-            return;
-        }
+    if (!/^d{17}$/.test(steamId)) return reply(client, interaction, 1, 'credentialsInvalidSteamId');
+
+    if (credentials[steamId] && credentials[steamId].discord_user_id !== discordId) {
+        return reply(client, interaction, 1, 'credentialsUsedByOther');
     }
 
-    if (!steamId) {
-        for (const credential of Object.keys(credentials)) {
-            if (credential === 'hoster') continue;
+    const existing = TeamManager.findCredential(guildId, discordId);
+    if (existing && existing.steamId !== steamId) return reply(client, interaction, 1, 'credentialsOneAccountOnly');
 
-            if (credentials[credential].discord_user_id === interaction.member.user.id) {
-                steamId = credential;
-                break;
-            }
-        }
-    }
-
-    if (!(steamId in credentials)) {
-        const str = client.intlGet(guildId, 'credentialsDoNotExist', {
-            steamId: steamId ? steamId : client.intlGet(guildId, 'unknown')
-        });
-        await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-        client.log(client.intlGet(null, 'warningCap'), str);
-        return;
-    }
-
-    if (steamId === credentials.hoster) {
-        if (client.fcmListeners[guildId]) {
-            client.fcmListeners[guildId].destroy();
-        }
-        delete client.fcmListeners[guildId];
-        credentials.hoster = null;
-    }
-    else {
-        if (client.fcmListenersLite[guildId][steamId]) {
-            client.fcmListenersLite[guildId][steamId].destroy();
-        }
-        delete client.fcmListenersLite[guildId][steamId];
-    }
-
-    delete credentials[steamId];
+    const renewed = existing !== null;
+    credentials[steamId] = {
+        ...(renewed ? existing.credential : {}),
+        gcm: {
+            android_id: interaction.options.getString('gcm_android_id'),
+            security_token: interaction.options.getString('gcm_security_token')
+        },
+        issued_date: interaction.options.getString('issued_date'),
+        expire_date: interaction.options.getString('expire_date'),
+        discord_user_id: discordId
+    };
     InstanceUtils.writeCredentialsFile(guildId, credentials);
 
-    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
-        id: `${verifyId}`,
-        value: `remove, ${steamId}`
-    }));
+    require('../util/FcmListener').start(client, guildId, steamId);
+    TeamManager.onCredentialsRenewed(client, guildId, discordId, steamId);
 
-    const str = client.intlGet(guildId, 'credentialsRemovedSuccessfully', { steamId: steamId });
-    await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str));
-    client.log(client.intlGet(null, 'infoCap'), str);
+    client.log(client.intlGet(null, 'infoCap'), `Credentials saved for steamId ${steamId}.`);
+    await reply(client, interaction, 0, renewed ? 'credentialsRenewed' : 'credentialsAddedNextStep');
 }
 
-async function showCredentials(client, interaction, verifyId) {
-    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
-        id: `${verifyId}`,
-        value: `show`
-    }));
-
-    await DiscordMessages.sendCredentialsShowMessage(interaction);
-}
-
-async function setHosterCredentials(client, interaction, verifyId) {
+async function removeCredentials(client, interaction) {
     const guildId = interaction.guildId;
-    const credentials = InstanceUtils.readCredentialsFile(guildId);
-    let steamId = interaction.options.getString('steam_id');
+    const discordId = interaction.user.id;
 
-    if (Config.discord.needAdminPrivileges && !client.isAdministrator(interaction)) {
-        const str = client.intlGet(interaction.guildId, 'missingPermission');
-        client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-        client.log(client.intlGet(null, 'warningCap'), str);
-        return;
-    }
+    if (!TeamManager.findCredential(guildId, discordId)) return reply(client, interaction, 1, 'credentialsNotFound');
 
-    if (!steamId) {
-        steamId = Object.keys(credentials).find(e => credentials[e] &&
-            credentials[e].discord_user_id === interaction.member.user.id);
-    }
+    const led = Teams.teamsOf(guildId, discordId).find(team => team.leaderDiscordId === discordId);
+    if (led) return reply(client, interaction, 1, 'credentialsLeaderMustPass', { team: led.name });
 
-    if (!(steamId in credentials)) {
-        const str = client.intlGet(guildId, 'credentialsDoNotExist', {
-            steamId: steamId ? steamId : client.intlGet(guildId, 'unknown')
-        });
-        await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-        client.log(client.intlGet(null, 'warningCap'), str);
-        return;
-    }
+    await TeamManager.handleMemberGone(client, guildId, discordId);
+    await reply(client, interaction, 0, 'credentialsRemoved');
+}
 
-    const prevHoster = credentials.hoster;
-    credentials.hoster = steamId;
-    InstanceUtils.writeCredentialsFile(guildId, credentials);
+async function showCredentials(client, interaction) {
+    const guildId = interaction.guildId;
+    const found = TeamManager.findCredential(guildId, interaction.user.id);
 
-    const instance = client.getInstance(guildId);
-    const rustplus = client.rustplusInstances[guildId];
-    if (rustplus) {
-        instance.activeServer = null;
-        client.setInstance(guildId, instance);
-        client.resetRustplusVariables(guildId);
-        rustplus.disconnect();
-        delete client.rustplusInstances[guildId];
-        await DiscordMessages.sendServerMessage(guildId, rustplus.serverId);
-    }
+    if (!found) return reply(client, interaction, 1, 'credentialsNotFound');
 
-    require('../util/FcmListener')(client, DiscordTools.getGuild(interaction.guildId));
-    if (prevHoster !== null) {
-        require('../util/FcmListenerLite')(client, DiscordTools.getGuild(interaction.guildId), prevHoster);
-    }
-
-    client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
-        id: `${verifyId}`,
-        value: `setHoster, ${steamId}`
-    }));
-
-    const str = client.intlGet(guildId, 'credentialsSetHosterSuccessfully', { steamId: steamId });
-    await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str));
-    client.log(client.intlGet(null, 'infoCap'), str);
+    const teams = Teams.teamsOf(guildId, interaction.user.id);
+    await reply(client, interaction, 0, 'credentialsShow', {
+        steamId: found.steamId,
+        date: new Date(TeamManager.expiryMs(found.credential)).toUTCString(),
+        team: teams.length > 0 ? teams.map(team => team.name).join(', ') : client.intlGet(null, 'teamNone')
+    });
 }

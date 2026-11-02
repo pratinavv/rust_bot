@@ -20,17 +20,25 @@
 
 const Discord = require('discord.js');
 
-const BattlemetricsHandler = require('../handlers/battlemetricsHandler.js');
 const Config = require('../../config');
+const DiscordTools = require('../discordTools/discordTools.js');
+const InstanceUtils = require('../util/instanceUtils.js');
+const TeamManager = require('../util/teamManager.js');
+const Teams = require('../util/teams.js');
+
+const TEAM_TICK_INTERVAL_MS = 60 * 60 * 1000;
 
 module.exports = {
     name: 'ready',
     once: true,
     async execute(client) {
         for (const guild of client.guilds.cache) {
-            require('../util/CreateInstanceFile')(client, guild[1]);
             require('../util/CreateCredentialsFile')(client, guild[1]);
-            client.fcmListenersLite[guild[0]] = new Object();
+            TeamManager.migrateGuild(client, guild[1]);
+        }
+
+        for (const team of Teams.active()) {
+            require('../util/CreateInstanceFile')(client, DiscordTools.getGuild(team.id));
         }
 
         client.loadGuildsIntl();
@@ -65,16 +73,29 @@ module.exports = {
                     client.log(client.intlGet(null, 'warningCap'), client.intlGet(null, 'ignoreSetNickname'));
                 }
             }
+            await require('../discordTools/RegisterSlashCommands')(client, guild);
             await client.syncCredentialsWithUsers(guild);
-            await client.setupGuild(guild);
         }
 
-        if (Config.battlemetrics.token !== '') {
-            await client.updateBattlemetricsInstances();
-            BattlemetricsHandler.handler(client, true);
-            client.battlemetricsIntervalId = setInterval(BattlemetricsHandler.handler, 60000, client, false);
+        for (const team of Teams.active()) {
+            const trimmed = await TeamManager.trimTeamChannels(client, team);
+            const guild = DiscordTools.getGuild(team.id);
+            await client.setupGuild(guild);
+
+            /* Settings now live in the information channel. */
+            if (trimmed) await require('../discordTools/SetupSettingsMenu')(client, guild, true);
+        }
+
+        for (const guild of client.guilds.cache) {
+            for (const steamId of Object.keys(InstanceUtils.readCredentialsFile(guild[0]))) {
+                if (steamId !== 'hoster') require('../util/FcmListener').start(client, guild[0], steamId);
+            }
         }
 
         client.createRustplusInstancesFromConfig();
+        client.startupDone = true;
+
+        TeamManager.tick(client);
+        setInterval(TeamManager.tick, TEAM_TICK_INTERVAL_MS, client);
     },
 };

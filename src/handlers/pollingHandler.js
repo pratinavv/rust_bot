@@ -21,9 +21,6 @@
 const Info = require('../structures/Info');
 const InformationHandler = require('../handlers/informationHandler.js');
 const MapMarkers = require('../structures/MapMarkers.js');
-const SmartAlarmHandler = require('../handlers/smartAlarmHandler.js');
-const SmartSwitchHandler = require('../handlers/smartSwitchHandler.js');
-const StorageMonitorHandler = require('../handlers/storageMonitorHandler.js');
 const Team = require('../structures/Team');
 const TeamHandler = require('../handlers/teamHandler.js');
 const Time = require('../structures/Time');
@@ -57,7 +54,6 @@ module.exports = {
         await TeamHandler.handler(rustplus, client, teamInfo.teamInfo);
         rustplus.team.updateTeam(teamInfo.teamInfo);
 
-        await SmartSwitchHandler.handler(rustplus, client, time.time);
         TimeHandler.handler(rustplus, client, time.time);
         await VendingMachines.handler(rustplus, client, mapMarkers.mapMarkers);
 
@@ -66,7 +62,5 @@ module.exports = {
         rustplus.mapMarkers.updateMapMarkers(mapMarkers.mapMarkers);
 
         await InformationHandler.handler(rustplus);
-        await StorageMonitorHandler.handler(rustplus, client);
-        await SmartAlarmHandler.handler(rustplus, client);
     },
 };

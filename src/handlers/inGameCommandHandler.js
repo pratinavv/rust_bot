@@ -18,9 +18,6 @@
 
 */
 
-const SmartAlarmHandler = require('./smartAlarmHandler.js');
-const SmartSwitchGroupHandler = require('./smartSwitchGroupHandler.js');
-const SmartSwitchHandler = require('./smartSwitchHandler.js');
 
 module.exports = {
     inGameCommandHandler: async function (rustplus, client, message) {
@@ -214,20 +211,8 @@ module.exports = {
         else {
             /* Maybe a custom command? */
 
-            if (SmartAlarmHandler.smartAlarmCommandHandler(rustplus, client, command)) {
-                rustplus.logInGameCommand('Smart Alarm', message);
-                return true;
-            }
 
-            if (await SmartSwitchHandler.smartSwitchCommandHandler(rustplus, client, command)) {
-                rustplus.logInGameCommand('Smart Switch', message);
-                return true;
-            }
 
-            if (await SmartSwitchGroupHandler.smartSwitchGroupCommandHandler(rustplus, client, command)) {
-                rustplus.logInGameCommand('Smart Switch Group', message);
-                return true;
-            }
 
             return false;
         }

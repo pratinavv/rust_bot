@@ -26,12 +26,10 @@ module.exports = {
         pollingIntervalMs: process.env.RPP_POLLING_INTERVAL || 10000,
         showCallStackError: process.env.RPP_LOG_CALL_STACK || false,
         reconnectIntervalMs: process.env.RPP_RECONNECT_INTERVAL || 15000,
-        dataDir: Path.resolve(process.env.RPP_DATA_DIR || Path.join(__dirname, '..')),
+        dataDir: Path.resolve(process.env.RPP_DATA_DIR || Path.join(__dirname, '..', 'data')),
     },
     discord: {
         username: process.env.RPP_DISCORD_USERNAME || 'pratinavv',
-        categoryName: process.env.RPP_CATEGORY_NAME || 'pratinavv',
-        teamRoleId: process.env.RPP_TEAM_ROLE_ID || null,
         clientId: process.env.RPP_DISCORD_CLIENT_ID || '',
         token: process.env.RPP_DISCORD_TOKEN || '',
         needAdminPrivileges: process.env.RPP_NEED_ADMIN_PRIVILEGES || true, /* If true, only admins can delete (server, switch..), manage credentials and reset a channel */

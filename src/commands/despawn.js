@@ -40,7 +40,7 @@ module.exports = {
 	},
 
 	async execute(client, interaction) {
-		const guildId = interaction.guildId;
+		const guildId = interaction.teamId;
 
 		const verifyId = Math.floor(100000 + Math.random() * 900000);
 		client.logInteraction(interaction, verifyId, 'slashCommand');

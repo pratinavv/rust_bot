@@ -21,11 +21,17 @@
 const Discord = require('discord.js');
 
 const Client = require('../../index.ts');
+const Teams = require('../util/teams.js');
 
 module.exports = {
     getGuild: function (guildId) {
         try {
-            return Client.client.guilds.cache.get(guildId);
+            const realId = Teams.guildIdOf(guildId);
+            if (realId === null) return Client.client.guilds.cache.get(guildId);
+
+            /* The Discord server, seen from a team: its id is the team id used for all team state. */
+            const guild = Client.client.guilds.cache.get(realId);
+            return guild ? Object.create(guild, { id: { value: guildId } }) : undefined;
         }
         catch (e) {
             Client.client.log(Client.client.intlGet(null, 'errorCap'),

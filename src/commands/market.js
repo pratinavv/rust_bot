@@ -93,8 +93,8 @@ module.exports = {
     },
 
     async execute(client, interaction) {
-        const instance = client.getInstance(interaction.guildId);
-        const rustplus = client.rustplusInstances[interaction.guildId];
+        const instance = client.getInstance(interaction.teamId);
+        const rustplus = client.rustplusInstances[interaction.teamId];
 
         const verifyId = Math.floor(100000 + Math.random() * 900000);
         client.logInteraction(interaction, verifyId, 'slashCommand');
@@ -103,7 +103,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
 
         if (!rustplus || (rustplus && !rustplus.isOperational)) {
-            const str = client.intlGet(interaction.guildId, 'notConnectedToRustServer');
+            const str = client.intlGet(interaction.teamId, 'notConnectedToRustServer');
             await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
             client.log(client.intlGet(null, 'warningCap'), str);
             return;
@@ -119,11 +119,11 @@ module.exports = {
                 if (searchItemName !== null) {
                     const item = client.items.getClosestItemIdByName(searchItemName)
                     if (item === null) {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithNameFound', {
                             name: searchItemName
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                     else {
@@ -135,26 +135,26 @@ module.exports = {
                         itemId = searchItemId;
                     }
                     else {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithIdFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithIdFound', {
                             id: searchItemId
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                 }
                 else if (searchItemName === null && searchItemId === null) {
-                    const str = client.intlGet(interaction.guildId, 'noNameIdGiven');
+                    const str = client.intlGet(interaction.teamId, 'noNameIdGiven');
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                    rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                     return;
                 }
                 const itemName = client.items.getName(itemId);
 
                 let full = false;
                 let foundLines = '';
-                const unknownString = client.intlGet(interaction.guildId, 'unknown');
-                const leftString = client.intlGet(interaction.guildId, 'remain');
+                const unknownString = client.intlGet(interaction.teamId, 'unknown');
+                const leftString = client.intlGet(interaction.teamId, 'remain');
                 for (const vendingMachine of rustplus.mapMarkers.vendingMachines) {
                     if (full) break;
                     if (!vendingMachine.hasOwnProperty('sellOrders')) continue;
@@ -205,7 +205,7 @@ module.exports = {
                 }
 
                 if (foundLines === '') {
-                    foundLines = client.intlGet(interaction.guildId, 'noItemFound');
+                    foundLines = client.intlGet(interaction.teamId, 'noItemFound');
                 }
                 else {
                     foundLines += '```'
@@ -218,14 +218,14 @@ module.exports = {
 
                 const embed = DiscordEmbeds.getEmbed({
                     color: Constants.COLOR_DEFAULT,
-                    title: client.intlGet(interaction.guildId, 'searchResult', { name: itemName }),
+                    title: client.intlGet(interaction.teamId, 'searchResult', { name: itemName }),
                     description: foundLines,
                     footer: { text: `${instance.serverList[rustplus.serverId].title}` }
                 });
 
                 await client.interactionEditReply(interaction, { embeds: [embed] });
-                rustplus.log(client.intlGet(interaction.guildId, 'infoCap'),
-                    client.intlGet(interaction.guildId, 'searchResult', { name: itemName }));
+                rustplus.log(client.intlGet(interaction.teamId, 'infoCap'),
+                    client.intlGet(interaction.teamId, 'searchResult', { name: itemName }));
             } break;
 
             case 'subscribe': {
@@ -237,11 +237,11 @@ module.exports = {
                 if (subscribeItemName !== null) {
                     const item = client.items.getClosestItemIdByName(subscribeItemName)
                     if (item === null) {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithNameFound', {
                             name: subscribeItemName
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                     else {
@@ -253,41 +253,41 @@ module.exports = {
                         itemId = subscribeItemId;
                     }
                     else {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithIdFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithIdFound', {
                             id: subscribeItemId
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                 }
                 else if (subscribeItemName === null && subscribeItemId === null) {
-                    const str = client.intlGet(interaction.guildId, 'noNameIdGiven');
+                    const str = client.intlGet(interaction.teamId, 'noNameIdGiven');
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                    rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                     return;
                 }
                 const itemName = client.items.getName(itemId);
 
                 if (instance.marketSubscriptionList[orderType].includes(itemId)) {
-                    const str = client.intlGet(interaction.guildId, 'alreadySubscribedToItem', {
+                    const str = client.intlGet(interaction.teamId, 'alreadySubscribedToItem', {
                         name: itemName
                     });
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
                         instance.serverList[rustplus.serverId].title));
-                    rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                 }
                 else {
                     instance.marketSubscriptionList[orderType].push(itemId);
                     rustplus.firstPollItems[orderType].push(itemId);
-                    client.setInstance(interaction.guildId, instance);
+                    client.setInstance(interaction.teamId, instance);
 
-                    const str = client.intlGet(interaction.guildId, 'justSubscribedToItem', {
+                    const str = client.intlGet(interaction.teamId, 'justSubscribedToItem', {
                         name: itemName
                     });
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str,
                         instance.serverList[rustplus.serverId].title));
-                    rustplus.log(client.intlGet(interaction.guildId, 'infoCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'infoCap'), str);
                 }
 
                 client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
@@ -305,11 +305,11 @@ module.exports = {
                 if (subscribeItemName !== null) {
                     const item = client.items.getClosestItemIdByName(subscribeItemName)
                     if (item === null) {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithNameFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithNameFound', {
                             name: subscribeItemName
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                     else {
@@ -321,18 +321,18 @@ module.exports = {
                         itemId = subscribeItemId;
                     }
                     else {
-                        const str = client.intlGet(interaction.guildId, 'noItemWithIdFound', {
+                        const str = client.intlGet(interaction.teamId, 'noItemWithIdFound', {
                             id: subscribeItemId
                         });
                         await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                        rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                        rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                         return;
                     }
                 }
                 else if (subscribeItemName === null && subscribeItemId === null) {
-                    const str = client.intlGet(interaction.guildId, 'noNameIdGiven');
+                    const str = client.intlGet(interaction.teamId, 'noNameIdGiven');
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
-                    rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                     return;
                 }
                 const itemName = client.items.getName(itemId);
@@ -340,22 +340,22 @@ module.exports = {
                 if (instance.marketSubscriptionList[orderType].includes(itemId)) {
                     instance.marketSubscriptionList[orderType] =
                         instance.marketSubscriptionList[orderType].filter(e => e !== itemId);
-                    client.setInstance(interaction.guildId, instance);
+                    client.setInstance(interaction.teamId, instance);
 
-                    const str = client.intlGet(interaction.guildId, 'removedSubscribeItem', {
+                    const str = client.intlGet(interaction.teamId, 'removedSubscribeItem', {
                         name: itemName
                     });
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str,
                         instance.serverList[rustplus.serverId].title));
-                    rustplus.log(client.intlGet(interaction.guildId, 'infoCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'infoCap'), str);
                 }
                 else {
-                    const str = client.intlGet(interaction.guildId, 'notExistInSubscription', {
+                    const str = client.intlGet(interaction.teamId, 'notExistInSubscription', {
                         name: itemName
                     });
                     await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
                         instance.serverList[rustplus.serverId].title));
-                    rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+                    rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
                 }
 
                 client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
@@ -380,21 +380,21 @@ module.exports = {
                 await client.interactionEditReply(interaction, {
                     embeds: [DiscordEmbeds.getEmbed({
                         color: Constants.COLOR_DEFAULT,
-                        title: client.intlGet(interaction.guildId, 'subscriptionList'),
+                        title: client.intlGet(interaction.teamId, 'subscriptionList'),
                         footer: { text: instance.serverList[rustplus.serverId].title },
                         fields: [
                             {
-                                name: client.intlGet(interaction.guildId, 'all'),
+                                name: client.intlGet(interaction.teamId, 'all'),
                                 value: names['all'] === '' ? '\u200B' : names['all'],
                                 inline: true
                             },
                             {
-                                name: client.intlGet(interaction.guildId, 'buy'),
+                                name: client.intlGet(interaction.teamId, 'buy'),
                                 value: names['buy'] === '' ? '\u200B' : names['buy'],
                                 inline: true
                             },
                             {
-                                name: client.intlGet(interaction.guildId, 'sell'),
+                                name: client.intlGet(interaction.teamId, 'sell'),
                                 value: names['sell'] === '' ? '\u200B' : names['sell'],
                                 inline: true
                             }]
@@ -402,8 +402,8 @@ module.exports = {
                     ephemeral: true
                 });
 
-                rustplus.log(client.intlGet(interaction.guildId, 'infoCap'),
-                    client.intlGet(interaction.guildId, 'showingSubscriptionList'));
+                rustplus.log(client.intlGet(interaction.teamId, 'infoCap'),
+                    client.intlGet(interaction.teamId, 'showingSubscriptionList'));
             } break;
 
             default: {

@@ -48,8 +48,8 @@ module.exports = {
 	},
 
 	async execute(client, interaction) {
-		const instance = client.getInstance(interaction.guildId);
-		const rustplus = client.rustplusInstances[interaction.guildId];
+		const instance = client.getInstance(interaction.teamId);
+		const rustplus = client.rustplusInstances[interaction.teamId];
 
 		const verifyId = Math.floor(100000 + Math.random() * 900000);
 		client.logInteraction(interaction, verifyId, 'slashCommand');
@@ -58,7 +58,7 @@ module.exports = {
 		await interaction.deferReply({ ephemeral: true });
 
 		if (!rustplus || (rustplus && !rustplus.isOperational)) {
-			const str = client.intlGet(interaction.guildId, 'notConnectedToRustServer');
+			const str = client.intlGet(interaction.teamId, 'notConnectedToRustServer');
 			await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 			client.log(client.intlGet(null, 'warningCap'), str);
 			return;
@@ -88,11 +88,11 @@ module.exports = {
 		let file = null;
 		if (interaction.options.getSubcommand() === 'clean') {
 			file = new Discord.AttachmentBuilder(
-				dataPath(`maps/${interaction.guildId}_map_clean.png`));
+				dataPath(`maps/${interaction.teamId}_map_clean.png`));
 		}
 		else {
 			file = new Discord.AttachmentBuilder(
-				dataPath(`maps/${interaction.guildId}_map_full.png`));
+				dataPath(`maps/${interaction.teamId}_map_full.png`));
 		}
 
 		client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {
@@ -104,13 +104,13 @@ module.exports = {
 		await client.interactionEditReply(interaction, {
 			embeds: [DiscordEmbeds.getEmbed({
 				color: Constants.COLOR_DEFAULT,
-				image: `attachment://${interaction.guildId}_map_${fileName}.png`,
+				image: `attachment://${interaction.teamId}_map_${fileName}.png`,
 				footer: { text: instance.serverList[rustplus.serverId].title }
 			})],
 			files: [file],
 			ephemeral: true
 		});
-		rustplus.log(client.intlGet(interaction.guildId, 'infoCap'), client.intlGet(interaction.guildId,
+		rustplus.log(client.intlGet(interaction.teamId, 'infoCap'), client.intlGet(interaction.teamId,
 			'displayingMap', { mapName: fileName }));
 	},
 };

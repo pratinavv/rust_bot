@@ -38,6 +38,6 @@ module.exports = {
 		if (!await client.validatePermissions(interaction)) return;
 
 		await DiscordMessages.sendHelpMessage(interaction);
-		client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.guildId, 'commandsHelpDesc'));
+		client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.teamId, 'commandsHelpDesc'));
 	},
 };

@@ -39,7 +39,7 @@ module.exports = {
 	},
 
 	async execute(client, interaction) {
-		const rustplus = client.rustplusInstances[interaction.guildId];
+		const rustplus = client.rustplusInstances[interaction.teamId];
 
 		const verifyId = Math.floor(100000 + Math.random() * 900000);
 		client.logInteraction(interaction, verifyId, 'slashCommand');
@@ -51,7 +51,7 @@ module.exports = {
 		switch (interaction.options.getSubcommand()) {
 			case 'bot': {
 				if (client.uptimeBot === null) {
-					string = client.intlGet(interaction.guildId, 'offline');
+					string = client.intlGet(interaction.teamId, 'offline');
 				}
 				else {
 					const seconds = (new Date() - client.uptimeBot) / 1000;
@@ -61,7 +61,7 @@ module.exports = {
 
 			case 'server': {
 				if (!rustplus || (rustplus && rustplus.uptimeServer === null)) {
-					string = client.intlGet(interaction.guildId, 'offline');
+					string = client.intlGet(interaction.teamId, 'offline');
 					break;
 				}
 
@@ -79,6 +79,6 @@ module.exports = {
 		}));
 
 		await DiscordMessages.sendUptimeMessage(interaction, string);
-		client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.guildId, 'commandsUptimeDesc'));
+		client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.teamId, 'commandsUptimeDesc'));
 	},
 };

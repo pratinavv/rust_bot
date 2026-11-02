@@ -18,9 +18,9 @@
 
 */
 
-const Config = require('../../config');
 const DiscordTools = require('../discordTools/discordTools.js');
 const PermissionHandler = require('../handlers/permissionHandler.js');
+const Teams = require('../util/teams.js');
 
 module.exports = async (client, guild) => {
     const instance = client.getInstance(guild.id);
@@ -30,7 +30,7 @@ module.exports = async (client, guild) => {
         category = DiscordTools.getCategoryById(guild.id, instance.channelId.category);
     }
     if (category === undefined) {
-        category = await DiscordTools.addCategory(guild.id, Config.discord.categoryName);
+        category = await DiscordTools.addCategory(guild.id, Teams.get(guild.id).name);
         instance.channelId.category = category.id;
         client.setInstance(guild.id, instance);
     }

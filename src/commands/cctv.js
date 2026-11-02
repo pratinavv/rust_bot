@@ -65,6 +65,6 @@ module.exports = {
         }));
 
         await DiscordMessages.sendCctvMessage(interaction, monument, cctvCodes, dynamic);
-        client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.guildId, 'commandsCctvDesc'));
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(interaction.teamId, 'commandsCctvDesc'));
     },
 };

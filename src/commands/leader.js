@@ -36,8 +36,8 @@ module.exports = {
 	},
 
 	async execute(client, interaction) {
-		const instance = client.getInstance(interaction.guildId);
-		const rustplus = client.rustplusInstances[interaction.guildId];
+		const instance = client.getInstance(interaction.teamId);
+		const rustplus = client.rustplusInstances[interaction.teamId];
 
 		const verifyId = Math.floor(100000 + Math.random() * 900000);
 		client.logInteraction(interaction, verifyId, 'slashCommand');
@@ -53,17 +53,17 @@ module.exports = {
 		}));
 
 		if (!rustplus || (rustplus && !rustplus.isOperational)) {
-			const str = client.intlGet(interaction.guildId, 'notConnectedToRustServer');
+			const str = client.intlGet(interaction.teamId, 'notConnectedToRustServer');
 			await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
 			client.log(client.intlGet(null, 'warningCap'), str);
 			return;
 		}
 
 		if (!rustplus.generalSettings.leaderCommandEnabled) {
-			const str = client.intlGet(interaction.guildId, 'leaderCommandIsDisabled');
+			const str = client.intlGet(interaction.teamId, 'leaderCommandIsDisabled');
 			await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
 				instance.serverList[rustplus.serverId].title));
-			rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+			rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
 			return;
 		}
 
@@ -79,19 +79,19 @@ module.exports = {
 			const str = client.intlGet(rustplus.guildId, 'leaderCommandOnlyWorks', { name: names });
 			await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
 				instance.serverList[rustplus.serverId].title));
-			rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+			rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
 			return;
 		}
 
 		for (const player of rustplus.team.players) {
 			if (player.name.includes(member)) {
 				if (rustplus.team.leaderSteamId === player.steamId) {
-					const str = client.intlGet(interaction.guildId, 'leaderAlreadyLeader', {
+					const str = client.intlGet(interaction.teamId, 'leaderAlreadyLeader', {
 						name: player.name
 					});
 					await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
 						instance.serverList[rustplus.serverId].title));
-					rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+					rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
 				}
 				else {
 					if (rustplus.generalSettings.leaderCommandOnlyForPaired) {
@@ -101,7 +101,7 @@ module.exports = {
 							});
 							await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
 								instance.serverList[rustplus.serverId].title));
-							rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+							rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
 							return;
 						}
 					}
@@ -113,20 +113,20 @@ module.exports = {
 						rustplus.leaderRustPlusInstance.promoteToLeaderAsync(player.steamId);
 					}
 
-					const str = client.intlGet(interaction.guildId, 'leaderTransferred', {
+					const str = client.intlGet(interaction.teamId, 'leaderTransferred', {
 						name: player.name
 					});
 					await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(0, str,
 						instance.serverList[rustplus.serverId].title));
-					rustplus.log(client.intlGet(interaction.guildId, 'infoCap'), str);
+					rustplus.log(client.intlGet(interaction.teamId, 'infoCap'), str);
 				}
 				return;
 			}
 		}
 
-		const str = client.intlGet(interaction.guildId, 'couldNotIdentifyMember', { name: member });
+		const str = client.intlGet(interaction.teamId, 'couldNotIdentifyMember', { name: member });
 		await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str,
 			instance.serverList[rustplus.serverId].title));
-		rustplus.log(client.intlGet(interaction.guildId, 'warningCap'), str);
+		rustplus.log(client.intlGet(interaction.teamId, 'warningCap'), str);
 	},
 };

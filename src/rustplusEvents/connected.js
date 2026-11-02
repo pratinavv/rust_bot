@@ -49,7 +49,6 @@ module.exports = {
             client.setInstance(guildId, instance);
 
             await DiscordMessages.sendServerConnectionInvalidMessage(guildId, serverId);
-            await DiscordMessages.sendServerMessage(guildId, serverId, null);
 
             client.resetRustplusVariables(guildId);
 
@@ -60,7 +59,11 @@ module.exports = {
         rustplus.log(client.intlGet(null, 'connectedCap'), client.intlGet(null, 'rustplusOperational'));
 
         const info = await rustplus.getInfoAsync();
-        if (await rustplus.isResponseValid(info)) rustplus.info = new Info(info.info)
+        if (await rustplus.isResponseValid(info)) {
+            rustplus.info = new Info(info.info);
+
+            if (await require('../util/teamManager.js').checkWipe(client, guildId, rustplus.info.wipeTime)) return;
+        }
 
         if (client.rustplusMaps.hasOwnProperty(guildId)) {
             if (client.isJpgImageChanged(guildId, map.map)) {
@@ -95,13 +98,6 @@ module.exports = {
             await DiscordMessages.sendServerChangeStateMessage(guildId, serverId, 0);
         }
 
-        await DiscordMessages.sendServerMessage(guildId, serverId, null);
-
-        /* Setup Smart Devices */
-        await require('../discordTools/SetupSwitches')(client, rustplus);
-        await require('../discordTools/SetupSwitchGroups')(client, rustplus);
-        await require('../discordTools/SetupAlarms')(client, rustplus);
-        await require('../discordTools/SetupStorageMonitors')(client, rustplus);
         rustplus.isNewConnection = false;
         rustplus.loadMarkers();
 

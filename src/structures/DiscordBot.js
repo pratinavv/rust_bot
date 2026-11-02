@@ -34,6 +34,7 @@ const Logger = require('./Logger.js');
 const PermissionHandler = require('../handlers/permissionHandler.js');
 const RustLabs = require('../structures/RustLabs');
 const RustPlus = require('../structures/RustPlus');
+const Teams = require('../util/teams.js');
 const dataPath = require('../util/dataPaths');
 
 class DiscordBot extends Discord.Client {
@@ -44,7 +45,7 @@ class DiscordBot extends Discord.Client {
 
         this.commands = new Discord.Collection();
         this.fcmListeners = new Object();
-        this.fcmListenersLite = new Object();
+        this.startupDone = false;
         this.instances = {};
         this.guildIntl = {};
         this.botIntl = null;
@@ -71,7 +72,6 @@ class DiscordBot extends Discord.Client {
         this.battlemetricsIntervalId = null;
         this.battlemetricsIntervalCounter = 0;
 
-        this.voiceLeaveTimeouts = new Object();
 
         this.loadDiscordCommands();
         this.loadDiscordEvents();
@@ -144,15 +144,15 @@ class DiscordBot extends Discord.Client {
     }
 
     loadGuildsIntl() {
-        for (const guild of this.guilds.cache) {
-            this.loadGuildIntl(guild[0]);
+        for (const team of Teams.active()) {
+            this.loadGuildIntl(team.id);
         }
     }
 
     intlGet(guildId, id, variables = {}) {
         let intl = null;
         if (guildId && guildId !== 'en') {
-            intl = this.guildIntl[guildId];
+            intl = this.guildIntl[guildId] || this.botIntl;
         }
         else {
             if (guildId === 'en') {
@@ -194,10 +194,10 @@ class DiscordBot extends Discord.Client {
     }
 
     logInteraction(interaction, verifyId, type) {
-        const channel = DiscordTools.getTextChannelById(interaction.guildId, interaction.channelId);
+        const channel = interaction.channel;
         const args = new Object();
         args['guild'] = `${interaction.member.guild.name} (${interaction.member.guild.id})`;
-        args['channel'] = `${channel.name} (${interaction.channelId})`;
+        args['channel'] = `${channel?.name} (${interaction.channelId})`;
         args['user'] = `${interaction.user.username} (${interaction.user.id})`;
         args[(type === 'slashCommand') ? 'command' : 'customid'] = (type === 'slashCommand') ?
             `${interaction.commandName}` : `${interaction.customId}`;
@@ -209,13 +209,6 @@ class DiscordBot extends Discord.Client {
     async setupGuild(guild) {
         const instance = this.getInstance(guild.id);
         const firstTime = instance.firstTime;
-
-        if (Config.discord.teamRoleId && instance.role !== Config.discord.teamRoleId) {
-            instance.role = Config.discord.teamRoleId;
-            this.setInstance(guild.id, instance);
-        }
-
-        await require('../discordTools/RegisterSlashCommands')(this, guild);
 
         let category = await require('../discordTools/SetupGuildCategory')(this, guild);
         await require('../discordTools/SetupGuildChannels')(this, guild, category);
@@ -232,14 +225,6 @@ class DiscordBot extends Discord.Client {
             await PermissionHandler.resetPermissionsAllChannels(this, guild);
         }
 
-        require('../util/FcmListener')(this, guild);
-        const credentials = InstanceUtils.readCredentialsFile(guild.id);
-        for (const steamId of Object.keys(credentials)) {
-            if (steamId !== credentials.hoster && steamId !== 'hoster') {
-                require('../util/FcmListenerLite')(this, guild, steamId);
-            }
-        }
-
         await require('../discordTools/SetupSettingsMenu')(this, guild);
 
         if (firstTime) await PermissionHandler.resetPermissionsAllChannels(this, guild);
@@ -249,41 +234,13 @@ class DiscordBot extends Discord.Client {
 
     async syncCredentialsWithUsers(guild) {
         const credentials = InstanceUtils.readCredentialsFile(guild.id);
-
         const members = await guild.members.fetch();
-        const memberIds = [];
-        for (const member of members) {
-            memberIds.push(member[0]);
-        }
 
-        const steamIdRemoveCredentials = [];
         for (const [steamId, content] of Object.entries(credentials)) {
-            if (steamId === 'hoster') continue;
+            if (steamId === 'hoster' || members.has(content.discord_user_id)) continue;
 
-            if (!(memberIds.includes(content.discord_user_id))) {
-                steamIdRemoveCredentials.push(steamId);
-            }
+            await require('../util/teamManager.js').handleMemberGone(this, guild.id, content.discord_user_id);
         }
-
-        for (const steamId of steamIdRemoveCredentials) {
-            if (steamId === credentials.hoster) {
-                if (this.fcmListeners[guild.id]) {
-                    this.fcmListeners[guild.id].destroy();
-                }
-                delete this.fcmListeners[guild.id];
-                credentials.hoster = null;
-            }
-            else {
-                if (this.fcmListenersLite[guild.id][steamId]) {
-                    this.fcmListenersLite[guild.id][steamId].destroy();
-                }
-                delete this.fcmListenersLite[guild.id][steamId];
-            }
-
-            delete credentials[steamId];
-        }
-
-        InstanceUtils.writeCredentialsFile(guild.id, credentials);
     }
 
     getInstance(guildId) {
@@ -325,7 +282,7 @@ class DiscordBot extends Discord.Client {
 
             const guildId = file.replace('.json', '');
             const instance = this.getInstance(guildId);
-            if (!instance) return;
+            if (!instance || Teams.get(guildId)?.status !== 'active') return;
 
             if (instance.activeServer !== null && instance.serverList.hasOwnProperty(instance.activeServer)) {
                 this.createRustplusInstance(
@@ -386,8 +343,8 @@ class DiscordBot extends Discord.Client {
         const activeInstances = [];
 
         /* Check for instances that are missing or need update. */
-        for (const guild of this.guilds.cache) {
-            const guildId = guild[0];
+        for (const team of Teams.active()) {
+            const guildId = team.id;
             const instance = this.getInstance(guildId);
             const activeServer = instance.activeServer;
             if (activeServer !== null && instance.serverList.hasOwnProperty(activeServer)) {
@@ -529,7 +486,10 @@ class DiscordBot extends Discord.Client {
     }
 
     async validatePermissions(interaction) {
-        const instance = this.getInstance(interaction.guildId);
+        /* Commands that work without a team, like /help. */
+        if (!interaction.teamId) return true;
+
+        const instance = this.getInstance(interaction.teamId);
 
         if (instance.blacklist['discordIds'].includes(interaction.user.id) &&
             !interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator)) {
@@ -541,8 +501,8 @@ class DiscordBot extends Discord.Client {
 
         if (!interaction.member.permissions.has(Discord.PermissionsBitField.Flags.Administrator) &&
             !interaction.member.roles.cache.has(instance.role)) {
-            let role = DiscordTools.getRole(interaction.guildId, instance.role);
-            const str = this.intlGet(interaction.guildId, 'notPartOfRole', { role: role.name });
+            let role = DiscordTools.getRole(interaction.teamId, instance.role);
+            const str = this.intlGet(interaction.teamId, 'notPartOfRole', { role: role.name });
             await this.interactionReply(interaction, DiscordEmbeds.getActionInfoEmbed(1, str));
             this.log(this.intlGet(null, 'warningCap'), str);
             return false;

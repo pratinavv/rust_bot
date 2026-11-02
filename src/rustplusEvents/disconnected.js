@@ -61,7 +61,6 @@ module.exports = {
         if (client.activeRustplusInstances[guildId]) {
             if (!client.rustplusReconnecting[guildId]) {
                 await DiscordMessages.sendServerChangeStateMessage(guildId, serverId, 1);
-                await DiscordMessages.sendServerMessage(guildId, serverId, 2);
             }
 
             client.rustplusReconnecting[guildId] = true;

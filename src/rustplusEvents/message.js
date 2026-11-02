@@ -22,7 +22,6 @@ const CommandHandler = require('../handlers/inGameCommandHandler.js');
 const Constants = require('../util/constants.js');
 const DiscordMessages = require('../discordTools/discordMessages.js');
 const InGameChatHandler = require('../handlers/inGameChatHandler.js');
-const SmartSwitchGroupHandler = require('../handlers/smartSwitchGroupHandler.js');
 const TeamChatHandler = require("../handlers/teamChatHandler.js");
 const TeamHandler = require('../handlers/teamHandler.js');
 
@@ -52,9 +51,6 @@ async function messageBroadcast(rustplus, client, message) {
     }
     else if (message.broadcast.hasOwnProperty('teamMessage')) {
         messageBroadcastTeamMessage(rustplus, client, message);
-    }
-    else if (message.broadcast.hasOwnProperty('entityChanged')) {
-        messageBroadcastEntityChanged(rustplus, client, message);
     }
     else if (message.broadcast.hasOwnProperty('cameraRays')) {
         messageBroadcastCameraRays(rustplus, client, message);
@@ -122,152 +118,7 @@ async function messageBroadcastTeamMessage(rustplus, client, message) {
     TeamChatHandler(rustplus, client, message.broadcast.teamMessage.message);
 }
 
-async function messageBroadcastEntityChanged(rustplus, client, message) {
-    const instance = client.getInstance(rustplus.guildId);
-    const entityId = message.broadcast.entityChanged.entityId;
-
-    if (instance.serverList[rustplus.serverId].switches.hasOwnProperty(entityId)) {
-        messageBroadcastEntityChangedSmartSwitch(rustplus, client, message);
-    }
-    else if (instance.serverList[rustplus.serverId].alarms.hasOwnProperty(entityId)) {
-        messageBroadcastEntityChangedSmartAlarm(rustplus, client, message);
-    }
-    else if (instance.serverList[rustplus.serverId].storageMonitors.hasOwnProperty(entityId)) {
-        messageBroadcastEntityChangedStorageMonitor(rustplus, client, message);
-    }
-}
-
 async function messageBroadcastCameraRays(rustplus, client, message) {
     /* Not implemented */
 }
 
-async function messageBroadcastEntityChangedSmartSwitch(rustplus, client, message) {
-    const instance = client.getInstance(rustplus.guildId);
-    const serverId = rustplus.serverId;
-    const entityId = message.broadcast.entityChanged.entityId;
-    const server = instance.serverList[serverId];
-
-    if (!server || (server && !server.switches[entityId])) return;
-
-    if (rustplus.interactionSwitches.includes(`${entityId}`)) {
-        rustplus.interactionSwitches = rustplus.interactionSwitches.filter(e => e !== `${entityId}`);
-        return;
-    }
-
-    if (rustplus.currentSwitchTimeouts.hasOwnProperty(entityId)) {
-        clearTimeout(rustplus.currentSwitchTimeouts[entityId]);
-        delete rustplus.currentSwitchTimeouts[entityId];
-    }
-
-    const active = message.broadcast.entityChanged.payload.value;
-    server.switches[entityId].active = active;
-    client.setInstance(rustplus.guildId, instance);
-
-    DiscordMessages.sendSmartSwitchMessage(rustplus.guildId, serverId, entityId);
-    SmartSwitchGroupHandler.updateSwitchGroupIfContainSwitch(
-        client, rustplus.guildId, serverId, entityId);
-}
-
-async function messageBroadcastEntityChangedSmartAlarm(rustplus, client, message) {
-    const instance = client.getInstance(rustplus.guildId);
-    const serverId = rustplus.serverId;
-    const entityId = message.broadcast.entityChanged.entityId;
-    const server = instance.serverList[serverId];
-
-    if (!server || (server && !server.alarms[entityId])) return;
-
-    const active = message.broadcast.entityChanged.payload.value;
-    server.alarms[entityId].active = active;
-    server.alarms[entityId].reachable = true;
-    client.setInstance(rustplus.guildId, instance);
-
-    if (active) {
-        server.alarms[entityId].lastTrigger = Math.floor(new Date() / 1000);
-        client.setInstance(rustplus.guildId, instance);
-        await DiscordMessages.sendSmartAlarmTriggerMessage(rustplus.guildId, serverId, entityId);
-
-        if (instance.generalSettings.smartAlarmNotifyInGame) {
-            rustplus.sendInGameMessage(`${server.alarms[entityId].name}: ${server.alarms[entityId].message}`);
-        }
-    }
-
-    DiscordMessages.sendSmartAlarmMessage(rustplus.guildId, rustplus.serverId, entityId);
-}
-
-async function messageBroadcastEntityChangedStorageMonitor(rustplus, client, message) {
-    const instance = client.getInstance(rustplus.guildId);
-    const serverId = rustplus.serverId;
-    const entityId = message.broadcast.entityChanged.entityId;
-    const server = instance.serverList[serverId];
-
-    if (!server || (server && !server.storageMonitors[entityId])) return;
-
-    if (message.broadcast.entityChanged.payload.value === true) return;
-
-    if (server.storageMonitors[entityId].type === 'toolCupboard' ||
-        message.broadcast.entityChanged.payload.capacity === Constants.STORAGE_MONITOR_TOOL_CUPBOARD_CAPACITY) {
-        setTimeout(updateToolCupboard.bind(null, rustplus, client, message), 2000);
-    }
-    else {
-        rustplus.storageMonitors[entityId] = {
-            items: message.broadcast.entityChanged.payload.items,
-            expiry: message.broadcast.entityChanged.payload.protectionExpiry,
-            capacity: message.broadcast.entityChanged.payload.capacity,
-            hasProtection: message.broadcast.entityChanged.payload.hasProtection
-        }
-
-        const info = await rustplus.getEntityInfoAsync(entityId);
-        server.storageMonitors[entityId].reachable = await rustplus.isResponseValid(info) ? true : false;
-
-        if (server.storageMonitors[entityId].reachable) {
-            if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_VENDING_MACHINE_CAPACITY) {
-                server.storageMonitors[entityId].type = 'vendingMachine';
-            }
-            else if (info.entityInfo.payload.capacity === Constants.STORAGE_MONITOR_LARGE_WOOD_BOX_CAPACITY) {
-                server.storageMonitors[entityId].type = 'largeWoodBox';
-            }
-        }
-        client.setInstance(rustplus.guildId, instance);
-
-        await DiscordMessages.sendStorageMonitorMessage(rustplus.guildId, serverId, entityId);
-    }
-}
-
-async function updateToolCupboard(rustplus, client, message) {
-    const instance = client.getInstance(rustplus.guildId);
-    const server = instance.serverList[rustplus.serverId];
-    const entityId = message.broadcast.entityChanged.entityId;
-
-    const info = await rustplus.getEntityInfoAsync(entityId);
-    server.storageMonitors[entityId].reachable = await rustplus.isResponseValid(info) ? true : false;
-    client.setInstance(rustplus.guildId, instance);
-
-    if (server.storageMonitors[entityId].reachable) {
-        rustplus.storageMonitors[entityId] = {
-            items: info.entityInfo.payload.items,
-            expiry: info.entityInfo.payload.protectionExpiry,
-            capacity: info.entityInfo.payload.capacity,
-            hasProtection: info.entityInfo.payload.hasProtection
-        }
-
-        server.storageMonitors[entityId].type = 'toolCupboard';
-
-        if (info.entityInfo.payload.protectionExpiry === 0 && server.storageMonitors[entityId].decaying === false) {
-            server.storageMonitors[entityId].decaying = true;
-
-            await DiscordMessages.sendDecayingNotificationMessage(rustplus.guildId, rustplus.serverId, entityId);
-
-            if (server.storageMonitors[entityId].inGame) {
-                rustplus.sendInGameMessage(client.intlGet(rustplus.guildId, 'isDecaying', {
-                    device: server.storageMonitors[entityId].name
-                }));
-            }
-        }
-        else if (info.entityInfo.payload.protectionExpiry !== 0) {
-            server.storageMonitors[entityId].decaying = false;
-        }
-        client.setInstance(rustplus.guildId, instance);
-    }
-
-    await DiscordMessages.sendStorageMonitorMessage(rustplus.guildId, rustplus.serverId, entityId);
-}

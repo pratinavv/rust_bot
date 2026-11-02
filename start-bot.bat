@@ -2,29 +2,22 @@
 setlocal
 cd /d "%~dp0"
 
-if "%~1"=="" (
-    set "ENV_FILE=.env"
-) else (
-    set "ENV_FILE=teams\%~1\.env"
-    set "RPP_DATA_DIR=teams\%~1"
-)
-
-if not exist "%ENV_FILE%" (
-    echo Could not find %ENV_FILE%
+if not exist ".env" (
+    echo Could not find .env
     pause
     exit /b 1
 )
 
-for /f "usebackq eol=# tokens=1,* delims==" %%a in ("%ENV_FILE%") do set "%%a=%%b"
+for /f "usebackq eol=# tokens=1,* delims==" %%a in (".env") do set "%%a=%%b"
 if not defined RPP_DISCORD_CLIENT_ID goto missing
 if not defined RPP_DISCORD_TOKEN goto missing
 
-title %RPP_DISCORD_USERNAME%
+title pratinavv
 call npm start run
 pause
 exit /b
 
 :missing
-echo Add the Discord Application ID and bot token to %ENV_FILE%, then run this again.
+echo Add the Discord Application ID and bot token to .env, then run this again.
 pause
 exit /b 1
