@@ -1058,7 +1058,7 @@ module.exports = {
         return module.exports.getEmbed({
             color: Constants.COLOR_DEFAULT,
             timestamp: true,
-            title: `rustplusplus Help`,
+            title: `pratinavv Help`,
             description: description
         });
     },

@@ -29,8 +29,8 @@ module.exports = {
         dataDir: Path.resolve(process.env.RPP_DATA_DIR || Path.join(__dirname, '..')),
     },
     discord: {
-        username: process.env.RPP_DISCORD_USERNAME || 'rustplusplus',
-        categoryName: process.env.RPP_CATEGORY_NAME || 'rustplusplus',
+        username: process.env.RPP_DISCORD_USERNAME || 'pratinavv',
+        categoryName: process.env.RPP_CATEGORY_NAME || 'pratinavv',
         teamRoleId: process.env.RPP_TEAM_ROLE_ID || null,
         clientId: process.env.RPP_DISCORD_CLIENT_ID || '',
         token: process.env.RPP_DISCORD_TOKEN || '',
