@@ -28,6 +28,7 @@ const DiscordEmbeds = require('./discordEmbeds.js');
 const DiscordSelectMenus = require('./discordSelectMenus.js');
 const DiscordTools = require('./discordTools.js');
 const Scrape = require('../util/scrape.js');
+const dataPath = require('../util/dataPaths');
 
 module.exports = {
     sendMessage: async function (guildId, content, messageId, channelId, interaction = null) {
@@ -298,7 +299,7 @@ module.exports = {
         const content = {
             embeds: [DiscordEmbeds.getServerWipeDetectedEmbed(guildId, serverId)],
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', '..', `maps/${guildId}_map_full.png`))],
+                dataPath(`maps/${guildId}_map_full.png`))],
             content: instance.generalSettings.mapWipeNotifyEveryone ? '@everyone' : ''
         }
 
@@ -320,7 +321,7 @@ module.exports = {
 
         const content = {
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', '..', `maps/${guildId}_map_full.png`))]
+                dataPath(`maps/${guildId}_map_full.png`))]
         }
 
         const message = await module.exports.sendMessage(guildId, content, instance.informationMessageId.map,
@@ -400,7 +401,7 @@ module.exports = {
 
         const content = {
             files: [new Discord.AttachmentBuilder(
-                Path.join(__dirname, '..', '..', `maps/${rustplus.guildId}_map_full.png`))]
+                dataPath(`maps/${rustplus.guildId}_map_full.png`))]
         }
 
         const message = await module.exports.sendMessage(rustplus.guildId, content,

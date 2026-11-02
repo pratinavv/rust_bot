@@ -34,12 +34,13 @@ const Logger = require('./Logger.js');
 const PermissionHandler = require('../handlers/permissionHandler.js');
 const RustLabs = require('../structures/RustLabs');
 const RustPlus = require('../structures/RustPlus');
+const dataPath = require('../util/dataPaths');
 
 class DiscordBot extends Discord.Client {
     constructor(props) {
         super(props);
 
-        this.logger = new Logger(Path.join(__dirname, '..', '..', 'logs/discordBot.log'), 'default');
+        this.logger = new Logger(dataPath('logs/discordBot.log'), 'default');
 
         this.commands = new Discord.Collection();
         this.fcmListeners = new Object();
@@ -209,6 +210,11 @@ class DiscordBot extends Discord.Client {
         const instance = this.getInstance(guild.id);
         const firstTime = instance.firstTime;
 
+        if (Config.discord.teamRoleId && instance.role !== Config.discord.teamRoleId) {
+            instance.role = Config.discord.teamRoleId;
+            this.setInstance(guild.id, instance);
+        }
+
         await require('../discordTools/RegisterSlashCommands')(this, guild);
 
         let category = await require('../discordTools/SetupGuildCategory')(this, guild);
@@ -312,7 +318,7 @@ class DiscordBot extends Discord.Client {
     }
 
     createRustplusInstancesFromConfig() {
-        const files = Fs.readdirSync(Path.join(__dirname, '..', '..', 'instances'));
+        const files = Fs.readdirSync(dataPath('instances'));
 
         files.forEach(file => {
             if (!file.endsWith('.json')) return;

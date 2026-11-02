@@ -25,6 +25,7 @@ const Path = require('path');
 
 const Constants = require('../util/constants.js');
 const Client = require('../../index.ts');
+const dataPath = require('../util/dataPaths');
 
 class Map {
     constructor(map, rustplus) {
@@ -41,7 +42,7 @@ class Map {
 
         this._mapMarkerImageMeta = {
             map: {
-                image: Path.join(__dirname, '..', '..', `maps/${this.rustplus.guildId}_map_clean.png`),
+                image: dataPath(`maps/${this.rustplus.guildId}_map_clean.png`),
                 size: null, type: null, jimp: null
             },
             player: {

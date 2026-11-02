@@ -24,6 +24,7 @@ const Path = require('path');
 
 const Constants = require('../util/constants.js');
 const DiscordEmbeds = require('../discordTools/discordEmbeds.js');
+const dataPath = require('../util/dataPaths');
 
 module.exports = {
 	name: 'map',
@@ -87,11 +88,11 @@ module.exports = {
 		let file = null;
 		if (interaction.options.getSubcommand() === 'clean') {
 			file = new Discord.AttachmentBuilder(
-				Path.join(__dirname, '..', '..', `maps/${interaction.guildId}_map_clean.png`));
+				dataPath(`maps/${interaction.guildId}_map_clean.png`));
 		}
 		else {
 			file = new Discord.AttachmentBuilder(
-				Path.join(__dirname, '..', '..', `maps/${interaction.guildId}_map_full.png`));
+				dataPath(`maps/${interaction.guildId}_map_full.png`));
 		}
 
 		client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'slashCommandValueChange', {

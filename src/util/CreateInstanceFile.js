@@ -19,13 +19,13 @@
 */
 
 const Fs = require('fs');
-const Path = require('path');
 
 const InstanceUtils = require('../util/instanceUtils.js');
+const dataPath = require('./dataPaths');
 
 module.exports = (client, guild) => {
     let instance = null;
-    if (!Fs.existsSync(Path.join(__dirname, '..', '..', 'instances', `${guild.id}.json`))) {
+    if (!Fs.existsSync(dataPath('instances', `${guild.id}.json`))) {
         instance = {
             firstTime: true,
             role: null,

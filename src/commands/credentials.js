@@ -166,8 +166,6 @@ async function addCredentials(client, interaction, verifyId) {
         value: `add, ${steamId}, ` +
             `${credentials[steamId].discord_user_id}, ` +
             `${isHoster}, ` +
-            `${credentials[steamId].gcm.android_id}, ` +
-            `${credentials[steamId].gcm.security_token}, ` +
             `${credentials[steamId].issued_date}, ` +
             `${credentials[steamId].expire_date}`
     }));

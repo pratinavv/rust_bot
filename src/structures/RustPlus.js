@@ -39,6 +39,7 @@ const Map = require('../util/map.js');
 const RustPlusLite = require('../structures/RustPlusLite');
 const TeamHandler = require('../handlers/teamHandler.js');
 const Timer = require('../util/timer.js');
+const dataPath = require('../util/dataPaths');
 
 const TOKENS_LIMIT = 24;        /* Per player */
 const TOKENS_REPLENISH = 3;     /* Per second */
@@ -134,7 +135,7 @@ class RustPlus extends RustPlusLib {
         const instance = Client.client.getInstance(this.guildId);
 
         /* Setup the logger */
-        this.logger = new Logger(Path.join(__dirname, '..', '..', `logs/${this.guildId}.log`), 'guild');
+        this.logger = new Logger(dataPath(`logs/${this.guildId}.log`), 'guild');
         this.logger.setGuildId(this.guildId);
         this.logger.serverName = instance.serverList[this.serverId].title;
 

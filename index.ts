@@ -22,6 +22,7 @@ const Discord = require('discord.js');
 const Fs = require('fs');
 const Path = require('path');
 
+const Config = require('./config');
 const DiscordBot = require('./src/structures/DiscordBot');
 
 createMissingDirectories();
@@ -41,20 +42,20 @@ const client = new DiscordBot({
 client.build();
 
 function createMissingDirectories() {
-    if (!Fs.existsSync(Path.join(__dirname, 'logs'))) {
-        Fs.mkdirSync(Path.join(__dirname, 'logs'));
+    if (!Fs.existsSync(Path.join(Config.general.dataDir, 'logs'))) {
+        Fs.mkdirSync(Path.join(Config.general.dataDir, 'logs'), { recursive: true });
     }
 
-    if (!Fs.existsSync(Path.join(__dirname, 'instances'))) {
-        Fs.mkdirSync(Path.join(__dirname, 'instances'));
+    if (!Fs.existsSync(Path.join(Config.general.dataDir, 'instances'))) {
+        Fs.mkdirSync(Path.join(Config.general.dataDir, 'instances'), { recursive: true });
     }
 
-    if (!Fs.existsSync(Path.join(__dirname, 'credentials'))) {
-        Fs.mkdirSync(Path.join(__dirname, 'credentials'));
+    if (!Fs.existsSync(Path.join(Config.general.dataDir, 'credentials'))) {
+        Fs.mkdirSync(Path.join(Config.general.dataDir, 'credentials'), { recursive: true });
     }
 
-    if (!Fs.existsSync(Path.join(__dirname, 'maps'))) {
-        Fs.mkdirSync(Path.join(__dirname, 'maps'));
+    if (!Fs.existsSync(Path.join(Config.general.dataDir, 'maps'))) {
+        Fs.mkdirSync(Path.join(Config.general.dataDir, 'maps'), { recursive: true });
     }
 }
 

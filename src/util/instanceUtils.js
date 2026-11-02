@@ -19,9 +19,9 @@
 */
 
 const Fs = require('fs');
-const Path = require('path');
 
 const Client = require('../../index.ts');
+const dataPath = require('./dataPaths');
 
 module.exports = {
     getSmartDevice: function (guildId, entityId) {
@@ -43,22 +43,22 @@ module.exports = {
     },
 
     readInstanceFile: function (guildId) {
-        const path = Path.join(__dirname, '..', '..', 'instances', `${guildId}.json`);
+        const path = dataPath('instances', `${guildId}.json`);
         return JSON.parse(Fs.readFileSync(path, 'utf8'));
     },
 
     writeInstanceFile: function (guildId, instance) {
-        const path = Path.join(__dirname, '..', '..', 'instances', `${guildId}.json`);
+        const path = dataPath('instances', `${guildId}.json`);
         Fs.writeFileSync(path, JSON.stringify(instance, null, 2));
     },
 
     readCredentialsFile: function (guildId) {
-        const path = Path.join(__dirname, '..', '..', 'credentials', `${guildId}.json`);
+        const path = dataPath('credentials', `${guildId}.json`);
         return JSON.parse(Fs.readFileSync(path, 'utf8'));
     },
 
     writeCredentialsFile: function (guildId, credentials) {
-        const path = Path.join(__dirname, '..', '..', 'credentials', `${guildId}.json`);
+        const path = dataPath('credentials', `${guildId}.json`);
         Fs.writeFileSync(path, JSON.stringify(credentials, null, 2));
     },
 }
