@@ -23,6 +23,19 @@ case "$(uname -m)" in
     *) echo "Unsupported processor: $(uname -m)" >&2; exit 1 ;;
 esac
 
+# Small servers (such as the 1 GB free AMD one) run out of memory while installing without swap.
+MEMORY_MB="$(awk '/MemTotal/ { print int($2 / 1024) }' /proc/meminfo)"
+if [[ "$MEMORY_MB" -lt 2048 ]] && [[ -z "$(swapon --show)" ]]; then
+    echo "==> Adding 2 GB of swap (this server has ${MEMORY_MB} MB of memory)"
+    if [[ ! -f /swapfile ]]; then
+        fallocate -l 2G /swapfile
+        chmod 600 /swapfile
+        mkswap /swapfile >/dev/null
+    fi
+    swapon /swapfile
+    grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
 echo "==> Installing system packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
@@ -62,7 +75,7 @@ echo "==> Installing packages (this can take a few minutes)"
 chown -R "$APP_USER:$APP_USER" "$APP_DIR"
 chown -R root:root "$APP_DIR/deploy" "$APP_DIR/.git"
 cd "$APP_DIR"
-sudo -u "$APP_USER" env PATH="/usr/local/bin:$PATH" HOME="/var/lib/$APP_USER" npm ci --no-audit --no-fund
+sudo -u "$APP_USER" env PATH="/usr/local/bin:$PATH" HOME="/var/lib/$APP_USER" npm ci --no-audit --no-fund --maxsockets=4
 
 echo "==> Setting up the service and daily backups"
 install -m 644 "$APP_DIR/deploy/pratinavv.service" /etc/systemd/system/pratinavv.service
