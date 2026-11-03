@@ -99,7 +99,7 @@ async function addCredentials(client, interaction) {
     const credentials = InstanceUtils.readCredentialsFile(guildId);
     const steamId = interaction.options.getString('steam_id').trim();
 
-    if (!/^d{17}$/.test(steamId)) return reply(client, interaction, 1, 'credentialsInvalidSteamId');
+    if (!/^\d{17}$/.test(steamId)) return reply(client, interaction, 1, 'credentialsInvalidSteamId');
 
     if (credentials[steamId] && credentials[steamId].discord_user_id !== discordId) {
         return reply(client, interaction, 1, 'credentialsUsedByOther');
