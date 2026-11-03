@@ -24,6 +24,7 @@ function load() {
     if (data === null) {
         const path = dataPath('teams.json');
         data = Fs.existsSync(path) ? JSON.parse(Fs.readFileSync(path, 'utf8')) : { teams: {} };
+        if (!data.selected) data.selected = {};
     }
     return data;
 }
@@ -80,6 +81,16 @@ module.exports = {
 
     remove: function (teamId) {
         delete load().teams[teamId];
+        module.exports.save();
+    },
+
+    /* The team someone picked with /team use. */
+    getSelected: function (discordId) {
+        return load().teams[load().selected[discordId]];
+    },
+
+    setSelected: function (discordId, teamId) {
+        load().selected[discordId] = teamId;
         module.exports.save();
     },
 

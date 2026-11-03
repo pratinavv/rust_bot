@@ -12,6 +12,9 @@
 
 const Fs = require('fs');
 
+const Discord = require('discord.js');
+
+const Config = require('../../config');
 const DiscordTools = require('../discordTools/discordTools.js');
 const InstanceUtils = require('./instanceUtils.js');
 const Teams = require('./teams.js');
@@ -154,13 +157,26 @@ module.exports = {
         return Teams.teamsOf(guildId, discordId).length > 1 ? 'teamUseTeamChannel' : 'teamJoinFirst';
     },
 
-    /* A team's own channels decide the team. Anywhere else it only works for someone in exactly one team. */
+    /* Commands run in one channel, so the team comes from what the player picked with /team use. */
     teamForInteraction: function (client, interaction) {
         const team = module.exports.teamFromChannel(client, interaction.channel);
         if (team) return team;
 
+        const selected = Teams.getSelected(interaction.user.id);
+        const isAdmin = interaction.member?.permissions?.has(Discord.PermissionFlagsBits.Administrator);
+        if (selected?.status === 'active' && selected.guildId === interaction.guildId &&
+            (selected.members[interaction.user.id] || isAdmin)) {
+            return selected;
+        }
+
         const teams = Teams.teamsOf(interaction.guildId, interaction.user.id);
         return teams.length === 1 ? teams[0] : undefined;
+    },
+
+    /* The channel commands belong in, if this command was run anywhere else. Servers without it have no limit. */
+    wrongCommandChannel: function (interaction) {
+        const channel = interaction.guild?.channels.cache.find(c => c.name === Config.discord.commandsChannel);
+        return channel && channel.id !== interaction.channelId ? channel : null;
     },
 
     onServerPaired: async function (client, guildId, steamId, title, body, notify = true) {

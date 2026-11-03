@@ -30,6 +30,7 @@
         "gm": "^1.25.0",
         "jimp": "^0.22.7",
         "lodash": "^4.17.21",
+        "rss-parser": "3.13.0",
         "translate": "^1.4.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.3",

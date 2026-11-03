@@ -30,6 +30,7 @@ module.exports = {
     },
     discord: {
         username: process.env.RPP_DISCORD_USERNAME || 'pratinavv',
+        commandsChannel: process.env.RPP_COMMANDS_CHANNEL || '🤖・bot-commands',
         clientId: process.env.RPP_DISCORD_CLIENT_ID || '',
         token: process.env.RPP_DISCORD_TOKEN || '',
         needAdminPrivileges: process.env.RPP_NEED_ADMIN_PRIVILEGES || true, /* If true, only admins can delete (server, switch..), manage credentials and reset a channel */

@@ -32,6 +32,15 @@ module.exports = {
         /* Handled by the collector in the team command. */
         if (interaction.isMessageComponent() && interaction.customId.startsWith('TeamConfirm')) return;
 
+        if (interaction.isChatInputCommand()) {
+            const channel = TeamManager.wrongCommandChannel(interaction);
+            if (channel) {
+                await client.interactionReply(interaction, DiscordEmbeds.getActionInfoEmbed(1,
+                    client.intlGet(null, 'commandsOnlyInChannel', { channel: `<#${channel.id}>` })));
+                return;
+            }
+        }
+
         const team = TeamManager.teamForInteraction(client, interaction);
         interaction.teamId = team ? team.id : null;
 

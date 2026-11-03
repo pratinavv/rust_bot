@@ -42,6 +42,7 @@ module.exports = {
 
             everyoneDeny.push(Discord.PermissionFlagsBits.ViewChannel);
             everyoneDeny.push(Discord.PermissionFlagsBits.SendMessages);
+            everyoneDeny.push(Discord.PermissionFlagsBits.UseApplicationCommands);
             roleAllow.push(Discord.PermissionFlagsBits.ViewChannel);
 
             perms.push({ id: guild.roles.everyone.id, deny: everyoneDeny });

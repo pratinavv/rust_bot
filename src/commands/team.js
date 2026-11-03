@@ -30,6 +30,9 @@ module.exports = {
 				.setName('join')
 				.setDescription(client.intlGet(guildId, 'commandsTeamJoinDesc')))
 			.addSubcommand(subcommand => subcommand
+				.setName('use')
+				.setDescription(client.intlGet(guildId, 'commandsTeamUseDesc')))
+			.addSubcommand(subcommand => subcommand
 				.setName('leave')
 				.setDescription(client.intlGet(guildId, 'commandsTeamLeaveDesc')))
 			.addSubcommand(subcommand => subcommand
@@ -71,7 +74,7 @@ module.exports = {
 		const team = interaction.teamId ? Teams.get(interaction.teamId) : undefined;
 		let result = null;
 
-		if (!team && !['create', 'join'].includes(subcommand)) {
+		if (!team && !['create', 'join', 'use'].includes(subcommand)) {
 			return reply(client, interaction, 1, TeamManager.noTeamKey(interaction.guildId, interaction.user.id));
 		}
 
@@ -83,6 +86,10 @@ module.exports = {
 
 			case 'join': {
 				return joinWithPicker(client, interaction);
+			}
+
+			case 'use': {
+				return useWithPicker(client, interaction);
 			}
 
 			case 'leave': {
@@ -139,16 +146,10 @@ async function reply(client, interaction, color, key, vars = {}) {
 	await client.interactionEditReply(interaction, DiscordEmbeds.getActionInfoEmbed(color, client.intlGet(null, key, vars)));
 }
 
-async function joinWithPicker(client, interaction) {
-	if (!TeamManager.findCredential(interaction.guildId, interaction.user.id)) {
-		return reply(client, interaction, 1, 'teamNeedCredentials');
-	}
-
-	const teams = Teams.active(interaction.guildId).filter(team => !team.members[interaction.user.id]);
-	if (teams.length === 0) return reply(client, interaction, 1, 'teamNoTeamsToJoin');
-
+/* Shows a private team list and returns the chosen team id, or null if nothing was picked in time. */
+async function pickTeam(client, interaction, teams, customId, promptKey) {
 	const menu = new Discord.StringSelectMenuBuilder()
-		.setCustomId('TeamConfirmJoin')
+		.setCustomId(customId)
 		.setPlaceholder(client.intlGet(null, 'teamJoinPlaceholder'))
 		.setOptions(teams.slice(0, 25).map(team => ({
 			label: team.name,
@@ -157,13 +158,13 @@ async function joinWithPicker(client, interaction) {
 		})));
 
 	const message = await client.interactionEditReply(interaction, {
-		...DiscordEmbeds.getActionInfoEmbed(0, client.intlGet(null, 'teamJoinPick')),
+		...DiscordEmbeds.getActionInfoEmbed(0, client.intlGet(null, promptKey)),
 		components: [new Discord.ActionRowBuilder().addComponents(menu)]
 	});
-	if (!message) return;
+	if (!message) return null;
 
 	const pick = await message.awaitMessageComponent({
-		filter: i => i.user.id === interaction.user.id && i.customId === 'TeamConfirmJoin',
+		filter: i => i.user.id === interaction.user.id && i.customId === customId,
 		time: CONFIRM_TIMEOUT_MS
 	}).catch(() => null);
 
@@ -172,16 +173,48 @@ async function joinWithPicker(client, interaction) {
 			...DiscordEmbeds.getActionInfoEmbed(1, client.intlGet(null, 'teamEndWipeCancelled')),
 			components: []
 		});
-		return;
+		return null;
 	}
 
 	await pick.deferUpdate();
-	const result = await TeamManager.joinTeam(client, interaction.member, pick.values[0]);
+	return pick.values[0];
+}
+
+async function joinWithPicker(client, interaction) {
+	if (!TeamManager.findCredential(interaction.guildId, interaction.user.id)) {
+		return reply(client, interaction, 1, 'teamNeedCredentials');
+	}
+
+	const teams = Teams.active(interaction.guildId).filter(team => !team.members[interaction.user.id]);
+	if (teams.length === 0) return reply(client, interaction, 1, 'teamNoTeamsToJoin');
+
+	const teamId = await pickTeam(client, interaction, teams, 'TeamConfirmJoin', 'teamJoinPick');
+	if (!teamId) return;
+
+	const result = await TeamManager.joinTeam(client, interaction.member, teamId);
+	if (result.ok) Teams.setSelected(interaction.user.id, teamId);
+
 	const text = !result.ok ? client.intlGet(null, result.error, result.vars) :
 		client.intlGet(null, result.vars.paired ? 'teamJoined' : 'teamJoinedNotPaired', result.vars);
 
 	await client.interactionEditReply(interaction, {
 		...DiscordEmbeds.getActionInfoEmbed(result.ok ? 0 : 1, text),
+		components: []
+	});
+}
+
+/* Admins can act on any team, everyone else on the teams they are in. */
+async function useWithPicker(client, interaction) {
+	const teams = client.isAdministrator(interaction) ? Teams.active(interaction.guildId) :
+		Teams.teamsOf(interaction.guildId, interaction.user.id);
+	if (teams.length === 0) return reply(client, interaction, 1, 'teamJoinFirst');
+
+	const teamId = await pickTeam(client, interaction, teams, 'TeamConfirmUse', 'teamUsePick');
+	if (!teamId) return;
+
+	Teams.setSelected(interaction.user.id, teamId);
+	await client.interactionEditReply(interaction, {
+		...DiscordEmbeds.getActionInfoEmbed(0, client.intlGet(null, 'teamUsing', { team: Teams.get(teamId).name })),
 		components: []
 	});
 }

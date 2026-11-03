@@ -16,6 +16,7 @@
 - **Two-way team chat.** Messages move between Discord and in-game team chat.
 - **Live information.** Server stats, active events, team status and the map stay up to date in one channel.
 - **Simple settings.** Each alert has one on or off switch that covers both Discord and team chat.
+- **News feeds.** New articles are posted to `🌐・ai-news`, `🟠・anthropic`, `🟢・openai` and `🔵・google`, if your server has channels with those exact names. Sources are listed in `src/util/newsFeeds.js`.
 
 Each team gets three channels:
 
@@ -51,6 +52,7 @@ You become its leader, and the bot creates the role and channels. A team belongs
 |---|---|---|
 | `/team create` | Anyone | Start a team on the server you paired with |
 | `/team join` | Anyone | Pick a team to join |
+| `/team use` | Members | Pick which of your teams your commands apply to |
 | `/team leave` | Members | Leave the team |
 | `/team info` | Members | Show the leader, server and members |
 | `/team rename` | Leader | Rename the team, its role and category |
@@ -58,7 +60,9 @@ You become its leader, and the bot creates the role and channels. A team belongs
 | `/team kick` | Leader | Remove a member |
 | `/team end-wipe` | Leader | Close the team and stop its alerts |
 
-Server admins can also use the leader commands. If you are in more than one team, run team commands inside the channels of the team you mean.
+Server admins can also use the leader commands, and can pick any team with `/team use`. If you are in more than one team, run `/team use` to choose which one your commands apply to.
+
+Commands only work in `🤖・bot-commands`. Servers without a channel of that name have no limit, and you can set a different name with `RPP_COMMANDS_CHANNEL`.
 
 ### Credentials
 

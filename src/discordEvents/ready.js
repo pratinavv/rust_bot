@@ -97,5 +97,7 @@ module.exports = {
 
         TeamManager.tick(client);
         setInterval(TeamManager.tick, TEAM_TICK_INTERVAL_MS, client);
+
+        require('../util/newsFeeds.js').start(client);
     },
 };
