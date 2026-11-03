@@ -1,0 +1,22 @@
+[Unit]
+Description=pratinavv Discord bot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=pratinavv
+Group=pratinavv
+WorkingDirectory=/opt/pratinavv
+EnvironmentFile=/opt/pratinavv/.env
+Environment=NODE_ENV=production
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/local/bin/node node_modules/ts-node/dist/bin.js .
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

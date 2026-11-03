@@ -101,6 +101,8 @@ npm start
 
 On Windows you can use `start-bot.bat` instead, which loads `.env` for you.
 
+To keep it online 24/7, follow the [Oracle Cloud guide](deploy/README.md).
+
 Team data, credentials and logs are saved in `data/`. **Never share `.env` or `data/`:** they hold your bot token and your players' Rust+ credentials.
 
 ## Security
