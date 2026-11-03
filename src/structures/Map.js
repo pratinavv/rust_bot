@@ -287,11 +287,6 @@ class Map {
     set monumentInfo(monumentInfo) { this._monumentInfo = monumentInfo; }
 
     /* Change checkers */
-    isWidthChanged(map) { return ((this.width) !== (map.width)); }
-    isHeightChanged(map) { return ((this.height) !== (map.height)); }
-    isOceanMarginChanged(map) { return ((this.oceanMargin) !== (map.oceanMargin)); }
-    isMonumentsChanged(map) { return ((JSON.stringify(this.monuments)) !== (JSON.stringify(map.monuments))); }
-    isBackgroundChanged(map) { return ((this.background) !== (map.background)); }
 
     async resetImageAndMeta() {
         await this.writeMapClean();

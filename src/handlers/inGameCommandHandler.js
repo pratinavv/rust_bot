@@ -18,7 +18,6 @@
 
 */
 
-
 module.exports = {
     inGameCommandHandler: async function (rustplus, client, message) {
         const guildId = rustplus.guildId;
@@ -186,10 +185,6 @@ module.exports = {
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUnmute')}`) {
             rustplus.sendInGameMessage(rustplus.getCommandUnmute());
         }
-        else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxUpkeep')}` ||
-            commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUpkeep')}`) {
-            rustplus.sendInGameMessage(rustplus.getCommandUpkeep());
-        }
         else if (commandLowerCase === `${prefix}${client.intlGet('en', 'commandSyntaxUptime')}` ||
             commandLowerCase === `${prefix}${client.intlGet(guildId, 'commandSyntaxUptime')}`) {
             rustplus.sendInGameMessage(rustplus.getCommandUptime());
@@ -204,9 +199,6 @@ module.exports = {
         }
         else {
             /* Maybe a custom command? */
-
-
-
 
             return false;
         }

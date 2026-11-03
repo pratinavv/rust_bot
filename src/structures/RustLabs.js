@@ -25,8 +25,6 @@ const RustlabsOther = require('../staticFiles/rustlabsOther.json');
 const CraftData = require('../staticFiles/rustlabsCraftData.json');
 const ResearchData = require('../staticFiles/rustlabsResearchData.json');
 const RecycleData = require('../staticFiles/rustlabsRecycleData.json');
-const DurabilityData = require('../staticFiles/rustlabsDurabilityData.json');
-const SmeltingData = require('../staticFiles/rustlabsSmeltingData.json');
 const DespawnData = require('../staticFiles/rustlabsDespawnData.json');
 const StackData = require('../staticFiles/rustlabsStackData.json');
 const DecayData = require('../staticFiles/rustlabsDecayData.json');
@@ -46,8 +44,6 @@ class RustLabs {
         this._craftData = CraftData;
         this._researchData = ResearchData;
         this._recycleData = RecycleData;
-        this._durabilityData = DurabilityData;
-        this._smeltingData = SmeltingData;
         this._despawnData = DespawnData;
         this._stackData = StackData;
         this._decayData = DecayData;
@@ -57,32 +53,6 @@ class RustLabs {
 
         this._rustlabsBuildingBlocks = RustlabsBuildingBlocks;
         this._rustlabsOther = RustlabsOther;
-
-        this._durabilityGroups = [
-            'explosive',
-            'melee',
-            'throw',
-            'guns',
-            'torpedo',
-            'turret'
-        ];
-
-        this._durabilityWhich = [
-            'hard',
-            'soft',
-            'both'
-        ];
-
-        this._orderedBy = [
-            'quantityHighFirst',
-            'quantityLowFirst',
-            'timeHighFirst',
-            'timeLowFirst',
-            'fuelHighFirst',
-            'fuelLowFirst',
-            'sulfurHighFirst',
-            'sulfurLowFirst'
-        ];
 
         this._buildingBlocks = Object.keys(this.rustlabsBuildingBlocks);
         this._other = Object.keys(this.rustlabsOther);
@@ -95,8 +65,6 @@ class RustLabs {
     get craftData() { return this._craftData; }
     get researchData() { return this._researchData; }
     get recycleData() { return this._recycleData; }
-    get durabilityData() { return this._durabilityData; }
-    get smeltingData() { return this._smeltingData; }
     get despawnData() { return this._despawnData; }
     get stackData() { return this._stackData; }
     get decayData() { return this._decayData; }
@@ -104,30 +72,8 @@ class RustLabs {
     get items() { return this._items; }
     get rustlabsBuildingBlocks() { return this._rustlabsBuildingBlocks; }
     get rustlabsOther() { return this._rustlabsOther; }
-    get durabilityGroups() { return this._durabilityGroups }
-    get durabilityWhich() { return this._durabilityWhich; }
-    get orderedBy() { return this._orderedBy; }
     get buildingBlocks() { return this._buildingBlocks; }
     get other() { return this._other; }
-
-    /***********************************************************************************
-     *  General functions
-     **********************************************************************************/
-
-    /**
-     *  Get all durability groups.
-     *  @return {array} An array of all the durability groups.
-     */
-
-    /**
-     *  Get all durability which.
-     *  @return {array} An array of all the durability which.
-     */
-
-    /**
-     *  Get all ordered by.
-     *  @return {array} An array of all the ordered by.
-     */
 
     /**
      *  Get the closest building block name by name.
@@ -156,25 +102,6 @@ class RustLabs {
     }
 
     /**
-     *  Get an array ordered by [key] - high to low or low to high
-     *  @param {array} array The array to sort.
-     *  @param {string} key The key to sort by.
-     *  @param {boolean} orderedByLow true if it should be ordered from low to high, false from high to low.
-     *  @return {array} The sorted array.
-     */
-
-    /**
-     *  Get an array ordered by [key] - high to low or low to high
-     *  @param {array} array The array to sort.
-     *  @param {string} orderedBy The choice to order by.
-     *  @return {array} The sorted array.
-     */
-
-    /***********************************************************************************
-     *  Craft functions
-     **********************************************************************************/
-
-    /**
      *  Check to see if itemId is part of craft details data.
      *  @param {string} itemId The itemId of the item.
      *  @return {boolean} true if exist, otherwise false.
@@ -185,12 +112,6 @@ class RustLabs {
 
     /**
      *  Get craft details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, craftDetails]
-     */
-
-    /**
-     *  Get craft details of an item.
      *  @param {string} id The id of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, craftDetails]
      */
@@ -198,10 +119,6 @@ class RustLabs {
         if (!this.hasCraftDetails(id)) return null;
         return [id, this.items.items[id], this.craftData[id]];
     }
-
-    /***********************************************************************************
-     *  Research functions
-     **********************************************************************************/
 
     /**
      *  Check to see if itemId is part of research details data.
@@ -214,12 +131,6 @@ class RustLabs {
 
     /**
      *  Get research details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, researchDetails]
-     */
-
-    /**
-     *  Get research details of an item.
      *  @param {string} id The id of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, researchDetails]
      */
@@ -227,10 +138,6 @@ class RustLabs {
         if (!this.hasResearchDetails(id)) return null;
         return [id, this.items.items[id], this.researchData[id]];
     }
-
-    /***********************************************************************************
-     *  Recycle functions
-     **********************************************************************************/
 
     /**
      *  Check to see if itemId is part of recycle details data.
@@ -240,12 +147,6 @@ class RustLabs {
     hasRecycleDetails(itemId) {
         return this.recycleData.hasOwnProperty(itemId);
     }
-
-    /**
-     *  Get recycle details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, recycleDetails]
-     */
 
     /**
      *  Get recycle details of an item.
@@ -341,67 +242,6 @@ class RustLabs {
         return recycleData;
     }
 
-    /***********************************************************************************
-     *  Durability functions
-     **********************************************************************************/
-
-    /**
-     *  Check to see if itemId or name is part of durability details data.
-     *  @param {string} itemIdOrName The itemId or name of the entity.
-     *  @return {boolean} true if exist, otherwise false.
-     */
-
-    /**
-     *  Get durability details of an item, building block or other.
-     *  @param {string} name The name of the item, building block or other.
-     *  @param {string} group The group of the item, building block or other.
-     *  @param {string} which The which of the item, building block or other.
-     *  @param {string} orderedBy The orderBy.
-     *  @return {array|null} null if something went wrong, otherwise
-     *      [type, id/name, itemDetails/name, durabilityDetails]
-     */
-
-    /**
-     *  Get durability details of an item.
-     *  @param {string} id The id of the item.
-     *  @param {string} group The group of the item.
-     *  @param {string} which The which of the item.
-     *  @return {array|null} null if something went wrong, otherwise [type, id, itemDetails, durabilityDetails]
-     */
-
-    /***********************************************************************************
-     *  Smelting functions
-     **********************************************************************************/
-
-    /**
-     *  Check to see if itemId is part of smelting details data.
-     *  @param {string} itemId The itemId of the item.
-     *  @return {boolean} true if exist, otherwise false.
-     */
-
-    /**
-     *  Get smelting details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, smeltingDetails]
-     */
-
-    /**
-     *  Get smelting details of an item.
-     *  @param {string} id The id of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, smeltingDetails]
-     */
-
-    /**
-     *  Get smelting details by the from parameter item.
-     *  @param {string} id The id of the from parameter item.
-     *  @return {array|null} null if something went wrong, otherwise Object of smelting details of the
-     *      from parameter item.
-     */
-
-    /***********************************************************************************
-     *  Despawn functions
-     **********************************************************************************/
-
     /**
      *  Check to see if itemId is part of despawn details data.
      *  @param {string} itemId The itemId of the item.
@@ -413,12 +253,6 @@ class RustLabs {
 
     /**
      *  Get despawn details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, despawnDetails]
-     */
-
-    /**
-     *  Get despawn details of an item.
      *  @param {string} id The id of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, despawnDetails]
      */
@@ -426,10 +260,6 @@ class RustLabs {
         if (!this.hasDespawnDetails(id)) return null;
         return [id, this.items.items[id], this.despawnData[id]];
     }
-
-    /***********************************************************************************
-     *  Stack functions
-     **********************************************************************************/
 
     /**
      *  Check to see if itemId is part of stack details data.
@@ -442,12 +272,6 @@ class RustLabs {
 
     /**
      *  Get stack details of an item.
-     *  @param {string} name The name of the item.
-     *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, stackDetails]
-     */
-
-    /**
-     *  Get stack details of an item.
      *  @param {string} id The id of the item.
      *  @return {array|null} null if something went wrong, otherwise [id, itemDetails, stackDetails]
      */
@@ -455,10 +279,6 @@ class RustLabs {
         if (!this.hasStackDetails(id)) return null;
         return [id, this.items.items[id], this.stackData[id]];
     }
-
-    /***********************************************************************************
-     *  Decay functions
-     **********************************************************************************/
 
     /**
      *  Check to see if itemId or name is part of decay details data.
@@ -535,10 +355,6 @@ class RustLabs {
 
         return ['items', id, this.items.items[id], this.decayData['items'][id]];
     }
-
-    /***********************************************************************************
-     *  Upkeep functions
-     **********************************************************************************/
 
     /**
      *  Check to see if itemId or name is part of upkeep details data.

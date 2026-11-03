@@ -65,15 +65,9 @@ class RustPlus extends RustPlusLib {
         this.tokens = 24;                           /* The amount of tokens that is available at start. */
         this.timers = new Object();                 /* Stores all custom timers that are created. */
         this.markers = new Object();                /* Stores all custom markers that are created. */
-        this.storageMonitors = new Object();        /* Contain content information of paired storage monitors. */
-        this.currentSwitchTimeouts = new Object();  /* Stores timer ids for auto ON/OFF Smart Switch timeouts. */
         this.passedFirstSunriseOrSunset = false;    /* Becomes true when first sunrise/sunset. */
         this.startTimeObject = new Object();        /* Stores in-game time points before first sunrise/sunset. */
         this.informationIntervalCounter = 0;        /* Counter to decide when information should be updated. */
-        this.storageMonitorIntervalCounter = 0;     /* Counter to decide when storage monitors should be updated */
-        this.smartSwitchIntervalCounter = 10;       /* Counter to decide when smart switches should be updated */
-        this.smartAlarmIntervalCounter = 20;        /* Counter to decide when smart alarms should be updated */
-        this.interactionSwitches = [];              /* Stores the ids of smart switches that are interacted in-game. */
         this.messagesSentByBot = [];                /* Stores the last messages sent by the bot to the team chat */
 
         /* Chat handler variables */
@@ -2352,25 +2346,6 @@ class RustPlus extends RustPlusLib {
         Client.client.setInstance(this.guildId, instance);
 
         return Client.client.intlGet(this.guildId, 'inGameBotMessagesUnmuted');
-    }
-
-    getCommandUpkeep() {
-        const instance = Client.client.getInstance(this.guildId);
-        let cupboardFound = false;
-        const strings = [];
-        for (const [key, value] of Object.entries(instance.serverList[this.serverId].storageMonitors)) {
-            if (value.type !== 'toolCupboard') continue;
-
-            if (value.upkeep) {
-                cupboardFound = true;
-                const upkeepStr = Client.client.intlGet(this.guildId, 'upkeep').toLowerCase();
-                strings.push(`${value.name} [${key}] ${upkeepStr}: ${value.upkeep}`);
-            }
-        }
-
-        if (!cupboardFound) return Client.client.intlGet(this.guildId, 'noToolCupboardWereFound');
-
-        return strings;
     }
 
     getCommandUptime() {

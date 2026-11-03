@@ -75,19 +75,14 @@ class Player {
     set wentOfflineTime(wentOfflineTime) { this._wentOfflineTime = wentOfflineTime; }
 
     /* Change checkers */
-    isSteamIdChanged(player) { return (this.steamId !== player.steamId.toString()); }
     isNameChanged(player) { return (this.name !== player.name); }
     isXChanged(player) { return (this.x !== player.x); }
     isYChanged(player) { return (this.y !== player.y); }
-    isOnlineChanged(player) { return (this.isOnline !== player.isOnline); }
-    isSpawnTimeChanged(player) { return (this.spawnTime !== player.spawnTime); }
-    isAliveChanged(player) { return (this.isAlive !== player.isAlive); }
     isDeathTimeChanged(player) { return (this.deathTime !== player.deathTime); }
 
     /* Other checkers */
     isGoneOnline(player) { return ((this.isOnline === false) && (player.isOnline === true)); }
     isGoneOffline(player) { return ((this.isOnline === true) && (player.isOnline === false)); }
-    isGoneAlive(player) { return ((this.isAlive === false) && (player.isAlive === true)); }
     isGoneDead(player) {
         return (((this.isAlive === true) && (player.isAlive === false))
             || this.isDeathTimeChanged(player));
@@ -155,11 +150,6 @@ class Player {
     }
     getAliveTime(ignore = '') { return Time.secondsToFullScale(this.getAliveSeconds(), ignore); }
 
-    getDeathSeconds() {
-        if (this.deathTime === 0) return 0;
-        return (new Date() - new Date(this.deathTime * 1000)) / 1000;
-    }
-    getDeathTime(ignore = '') { return (Time.secondsToFullScale(this.getDeathSeconds(), ignore)); }
     getOfflineTime(ignore = '') {
         if (this.wentOfflineTime === null) return null;
         const seconds = (new Date() - this.wentOfflineTime) / 1000;

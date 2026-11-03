@@ -142,13 +142,8 @@ async function pairingServer(client, guild, title, message, body) {
         img: isValidUrl(body.img) ? body.img.replace(/ /g, '%20') : Constants.DEFAULT_SERVER_IMG,
         url: isValidUrl(body.url) ? body.url.replace(/ /g, '%20') : Constants.DEFAULT_SERVER_URL,
         notes: server ? server.notes : {},
-        switches: {},
-        alarms: {},
-        storageMonitors: {},
         markers: server ? server.markers : {},
-        switchGroups: {},
         messageId: null,
-        battlemetricsId: server?.battlemetricsId ?? null,
         connect: server?.connect ?? null,
         cargoShipEgressTimeMs: server ? server.cargoShipEgressTimeMs : Constants.DEFAULT_CARGO_SHIP_EGRESS_TIME_MS,
         oilRigLockedCrateUnlockTimeMs: server ? server.oilRigLockedCrateUnlockTimeMs :

@@ -78,7 +78,7 @@ Commands only work in `🤖・bot-commands`. Servers without a channel of that n
 
 ### In-game
 
-Type these in team chat, for example `!cargo`, `!heli`, `!small`, `!large`, `!chinook`, `!vendor`, `!pop`, `!time`, `!online`, `!offline`, `!team`, `!upkeep`, `!craft`, `!recycle`, `!stack`, `!timer` or `!tr`.
+Type these in team chat, for example `!cargo`, `!heli`, `!small`, `!large`, `!chinook`, `!vendor`, `!pop`, `!time`, `!online`, `!offline`, `!team`, `!craft`, `!recycle`, `!stack`, `!timer` or `!tr`.
 
 `!leader` makes you the in-game team leader, which is separate from the Discord team leader. It only works if the current in-game leader has registered credentials.
 

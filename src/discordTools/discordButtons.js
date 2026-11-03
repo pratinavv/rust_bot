@@ -20,7 +20,6 @@
 
 const Discord = require('discord.js');
 
-
 const SUCCESS = Discord.ButtonStyle.Success;
 const DANGER = Discord.ButtonStyle.Danger;
 const PRIMARY = Discord.ButtonStyle.Primary;

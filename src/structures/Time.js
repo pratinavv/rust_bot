@@ -63,18 +63,8 @@ class Time {
     get timeTillActive() { return this._timeTillActive; }
     set timeTillActive(timeTillActive) { this._timeTillActive = timeTillActive; }
 
-    /* Change checkers */
-    isDayLengthMinutesChanged(time) { return ((this.dayLengthMinutes) !== (time.dayLengthMinutes)); }
-    isTimeScaleChanged(time) { return ((this.timeScale) !== (time.timeScale)); }
-    isSunriseChanged(time) { return ((this.sunrise) !== (time.sunrise)); }
-    isSunsetChanged(time) { return ((this.sunset) !== (time.sunset)); }
-    isTimeChanged(time) { return ((this.time) !== (time.time)); }
-
     /* Other checkers */
     isDay() { return ((this.time >= this.sunrise) && (this.time < this.sunset)); }
-    isNight() { return !this.isDay(); }
-    isTurnedDay(time) { return (this.isNight() && time.time >= time.sunrise && time.time < time.sunset); }
-    isTurnedNight(time) { return (this.isDay() && !(time.time >= time.sunrise && time.time < time.sunset)); }
 
     loadTimeTillConfig() {
         let instance = this.client.getInstance(this.rustplus.guildId);

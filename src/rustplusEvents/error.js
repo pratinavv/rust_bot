@@ -18,7 +18,6 @@
 
 */
 
-
 module.exports = {
     name: 'error',
     async execute(rustplus, client, err) {

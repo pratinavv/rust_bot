@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/pratinavv/rust_bot#readme",
     "dependencies": {
+        "@discordjs/builders": "^1.11.2",
         "@discordjs/rest": "^2.5.1",
         "@formatjs/intl": "^2.6.9",
         "@liamcottle/push-receiver": "^0.0.4",

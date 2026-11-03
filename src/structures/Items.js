@@ -35,8 +35,6 @@ class Items {
     get items() { return this._items; }
     get itemNames() { return this._itemNames; }
 
-    addItem(id, content) { this.items[id] = content; }
-    removeItem(id) { delete this.items[id]; }
     itemExist(id) { return (id in this.items) ? true : false; }
 
     getShortName(id) {

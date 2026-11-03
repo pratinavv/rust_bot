@@ -33,8 +33,6 @@ module.exports = {
 
     /* Select menus */
 
-
-
     /* Default timer times */
     DEFAULT_CARGO_SHIP_EGRESS_TIME_MS: 50 * 60 * 1000, /* 50 min */
     DEFAULT_OIL_RIG_LOCKED_CRATE_UNLOCK_TIME_MS: 15 * 60 * 1000, /* 15 min */

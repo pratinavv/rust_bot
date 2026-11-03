@@ -66,20 +66,8 @@ class Info {
 
     /* Change checkers */
     isNameChanged(info) { return ((this.name) !== (info.name)); }
-    isHeaderImageChanged(info) { return ((this.headerImage) !== (info.headerImage)); }
-    isUrlChanged(info) { return ((this.url) !== (info.url)); }
-    isMapChanged(info) { return ((this.map) !== (info.map)); }
-    isMapSizeChanged(info) { return ((this.mapSize) !== (info.mapSize)); }
-    isWipeTimeChanged(info) { return ((this.wipeTime) !== (info.wipeTime)); }
-    isPlayersChanged(info) { return ((this.players) !== (info.players)); }
-    isMaxPlayersChanged(info) { return ((this.maxPlayers) !== (info.maxPlayers)); }
-    isQueuedPlayersChanged(info) { return ((this.queuedPlayers) !== (info.queuedPlayers)); }
-    isSeedChanged(info) { return ((this.seed) !== (info.seed)); }
-    isSaltChanged(info) { return ((this.salt) !== (info.salt)); }
 
     /* Other checkers */
-    isMaxPlayersIncreased(info) { return ((this.maxPlayers) < (info.maxPlayers)); }
-    isMaxPlayersDecreased(info) { return ((this.maxPlayers) > (info.maxPlayers)); }
     isQueue() { return (this.queuedPlayers !== 0); }
 
     updateInfo(info) {

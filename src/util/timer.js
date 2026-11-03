@@ -47,12 +47,6 @@ module.exports = {
             remaining -= new Date() - started;
         }
 
-        this.restart = function () {
-            this.stop();
-            remaining = delay;
-            this.start();
-        }
-
         this.getTimeLeft = function () {
             if (this.getStateRunning()) {
                 this.pause();
